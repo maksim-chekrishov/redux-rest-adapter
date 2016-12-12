@@ -1,0 +1,8 @@
+{
+  "root": true,
+  "extends": "rambler",
+  "rules": {
+    "react/jsx-uses-vars": 1,
+    "react/react-in-jsx-scope": 1
+  }
+}
