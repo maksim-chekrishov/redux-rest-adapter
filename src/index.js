@@ -4,8 +4,7 @@
 import entityApi from './entity-api';
 import {configureCRUDListReducerExtension} from './configure-reducer';
 import configureReducer from './configure-reducer';
-import reduxApiMiddleware from 'redux-api-middleware';
 
-export {configureReducer, configureCRUDListReducerExtension, entityApi, reduxApiMiddleware}
+export {configureReducer, configureCRUDListReducerExtension, entityApi};
 
 export default entityApi;
