@@ -1,6 +1,6 @@
 {
   "name": "redux-rest-adapter",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "REST adapter for redux",
   "main": "lib/index.js",
   "repository": {
@@ -20,7 +20,7 @@
   ],
   "scripts": {
     "build": "$(npm bin)/babel src -d lib",
-    "pub":"rm -rf node_modules && npm i && npm build && npm t && npm publish",
+    "pub":"npm i && npm build && npm t && npm publish && git commit -am 'new version'",
     "prod": "npm i --production",
     "test": "jest"
   },
