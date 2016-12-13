@@ -1,5 +1,4 @@
 import {CALL_API} from 'redux-api-middleware';
-import _ from 'lodash/object';
 import configureReducer from './configure-reducer.js';
 
 export const RestMethods = {
@@ -45,36 +44,43 @@ export default class EntityApi {
    * @returns {Object}
    */
   get actions() {
-    let _this = this;
-    let actions = _.mapValues(_.invert(RestMethods), (methodKey, methodName) => _this[methodName].bind(_this));
+    const _this = this;
+    const actions = {};
 
-    _.forIn(SilentMethods, (methodName) => {
+    const allMethods = {...RestMethods, ...SilentMethods};
+
+    for (let key in allMethods) {
+      const methodName = allMethods[key];
       actions[methodName] = _this[methodName].bind(_this);
-    });
+    }
 
     return actions;
   }
 
   get actionsTypes() {
-    let _this = this;
+    const _this = this;
 
     // Private property for lazy getter
     if (!this._actionsTypes) {
-      this._actionsTypes = _.mapValues(RestMethods, (methodName)=> {
-        let requestStatusActionsOptions = _this.generateRequestActionsOptions(methodName);
-        let res = {};
+      this._actionsTypes = {};
+
+      for (let key in RestMethods) {
+        const methodName = RestMethods[key];
+        const requestStatusActionsOptions = _this.generateRequestActionsOptions(methodName);
+        const res = {};
 
         orderedRequestStatusesArray.map((status, i)=> {
           res[status] = requestStatusActionsOptions[i].type;
         });
 
-        return res;
-      });
+        _this._actionsTypes[key] = res;
+      }
 
-      _.forIn(SilentMethods, (methodName, methodKey)=> {
-        _this.actionsTypes[methodKey] = _this.generateSilentActionType(methodName);
-      });
+      for (let key in SilentMethods) {
+        _this.actionsTypes[key] = _this.generateSilentActionType(SilentMethods[key])
+      }
     }
+
     return this._actionsTypes;
   }
 
