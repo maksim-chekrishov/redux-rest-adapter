@@ -101,3 +101,7 @@ export {TagsComponent, TagsContainer};
 
 ##TODO
 Example for CRUD list reducers
+
+###See also
+
+[redux-localstorage-adapter](https://www.npmjs.com/package/redux-localstorage-adapter)
