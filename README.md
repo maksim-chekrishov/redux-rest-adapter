@@ -44,7 +44,7 @@ export default _.mapValues(knownEntitiesApi, entityApi => entityApi.actions);
 ###configure-store.js
 
 ```js
-import {apiMiddleware} from 'redux-rest-adapter';
+import {apiMiddleware} from 'redux-rest-adapter/redux-api-middleware';
 //..
 
 
