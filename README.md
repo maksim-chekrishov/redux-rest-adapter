@@ -42,7 +42,7 @@ export default _.mapValues(knownEntitiesApi, entityApi => entityApi.actions);
 
 ##Adapter is ready
 
-
+![Image devTools](https://raw.githubusercontent.com/maksim-chekrishov/redux-rest-adapter/master/readme-src/dev-tools.jpg)
 
 ##Usage
 
