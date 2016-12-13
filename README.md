@@ -1,6 +1,6 @@
 # redux-rest-adapter
-REST adapter for redux based on [redux-api-middleware](https://www.npmjs.com/package/redux-api-middleware)
 
+REST adapter for redux based on [redux-api-middleware](https://www.npmjs.com/package/redux-api-middleware)
 [![npm version](https://badge.fury.io/js/redux-rest-adapter.svg)](https://badge.fury.io/js/redux-rest-adapter)
 ##Setup
 
@@ -37,6 +37,22 @@ export default combineReducers(entitiesReducers);
 
 ```js
 export default _.mapValues(knownEntitiesApi, entityApi => entityApi.actions);
+```
+
+###configure-store.js
+
+```js
+import {apiMiddleware} from 'redux-rest-adapter';
+//..
+
+
+export default function configureStore(initialState) {
+  return createStore(
+    entitiesReducer,
+    initialState,
+    applyMiddleware(apiMiddleware)
+  );
+}
 ```
 
 ##Adapter is ready
@@ -99,7 +115,8 @@ export {TagsComponent, TagsContainer};
 ```
 
 ##TODO
-Example for CRUD list reducers
+
+Example of generated list reducer (basic CRUD operations)
 
 ###See also
 

@@ -20,7 +20,7 @@
   ],
   "scripts": {
     "build": "$(npm bin)/babel src -d lib",
-    "pub":"npm i && npm build && npm t && npm publish && git commit -am 'new version'",
+    "pub":"npm i && npm build && npm t && npm publish && git commit -am 'new version' && git push",
     "prod": "npm i --production",
     "test": "jest"
   },
