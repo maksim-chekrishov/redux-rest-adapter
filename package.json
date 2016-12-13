@@ -1,8 +1,8 @@
 {
   "name": "redux-rest-adapter",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "REST adapter for redux",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/maksim-chekrishov/redux-rest-adapter"
@@ -20,7 +20,7 @@
   ],
   "scripts": {
     "build": "$(npm bin)/babel src -d lib",
-    "publish":"rm -rf node_modules && npm i && npm build && npm t && npm publish",
+    "pub":"rm -rf node_modules && npm i && npm build && npm t && npm publish",
     "prod": "npm i --production",
     "test": "jest"
   },
