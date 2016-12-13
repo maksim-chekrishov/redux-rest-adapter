@@ -2,7 +2,6 @@
 REST adapter for redux
 
 [![npm version](https://badge.fury.io/js/redux-rest-adapter.svg)](https://badge.fury.io/js/redux-rest-adapter)
-
 ##Setup
 
 ###known-entities-api.js
@@ -71,7 +70,7 @@ class TagsComponent extends Component {
   render() {
     return (
       this.props.pending ?
-        (<Loading/>) :
+        <Loading/> :
         <div>
            {/*...*/}
         </div>
