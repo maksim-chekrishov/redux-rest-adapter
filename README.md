@@ -11,8 +11,8 @@ REST adapter for redux
 import EntityApi from 'redux-rest-adapter';
 
 export const KnownEntitiesUrls = {
-  NEWS_TAGS: 'news-categories',
-  NEWS_TAG_FOR_EDIT: 'news-categories',
+  NEWS_TAGS: 'news-tags',
+  NEWS_TAG_FOR_EDIT: 'news-tags',
   //..
 };
 export default _.mapValues(KnownEntitiesUrls, (url, name)=> new EntityApi({
@@ -39,6 +39,10 @@ export default combineReducers(entitiesReducers);
 ```js
 export default _.mapValues(knownEntitiesApi, entityApi => entityApi.actions);
 ```
+
+##Adapter is ready
+
+
 
 ##Usage
 
