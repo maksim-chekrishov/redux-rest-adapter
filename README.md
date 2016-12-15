@@ -35,10 +35,13 @@ const entitiesReducers = _.mapValues(knownEntitiesApi, (api, key) => api.configu
 export default combineReducers(entitiesReducers);
 ```
 
-###entities-actions.js
+###your-index-reducer.js
 
 ```js
-export default _.mapValues(knownEntitiesApi, entityApi => entityApi.actions);
+export default combineReducers({
+  entities: entitiesReducers
+  //..
+});
 ```
 
 ###configure-store.js
@@ -50,12 +53,19 @@ import {apiMiddleware} from 'redux-rest-adapter/redux-api-middleware';
 
 export default function configureStore(initialState) {
   return createStore(
-    entitiesReducer,
+    yourIndexReducer,
     initialState,
     applyMiddleware(apiMiddleware)
   );
 }
 ```
+
+###entities-actions.js
+
+```js
+export default _.mapValues(knownEntitiesApi, entityApi => entityApi.actions);
+```
+
 
 ##Adapter is ready
 
