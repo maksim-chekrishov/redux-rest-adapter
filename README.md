@@ -1,6 +1,6 @@
 # redux-rest-adapter
 
-REST adapter for redux based on [redux-api-middleware](https://www.npmjs.com/package/redux-api-middleware)
+redux-rest-adapter is REST adapter for redux based on [redux-api-middleware](https://www.npmjs.com/package/redux-api-middleware)
 
 [![npm version](https://badge.fury.io/js/redux-rest-adapter.svg)](https://badge.fury.io/js/redux-rest-adapter)
 

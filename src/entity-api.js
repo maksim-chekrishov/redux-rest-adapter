@@ -84,7 +84,7 @@ export default class EntityApi {
     return this._actionsTypes;
   }
 
-  get _requestHeaders() {
+  get requestHeaders() {
     return {
       'Accept': 'application/json'
     };
@@ -133,7 +133,7 @@ export default class EntityApi {
       [CALL_API]: {
         types: this.generateRequestActionsOptions(RestMethods.LOAD, params),
         endpoint: this._endpointUrl + queryString,
-        headers: this._requestHeaders,
+        headers: this.requestHeaders,
         method: 'GET',
         credentials: 'include'
       }
@@ -146,7 +146,7 @@ export default class EntityApi {
         types: this.generateRequestActionsOptions(RestMethods.CREATE, entity),
         endpoint: this._endpointUrl,
         method: 'POST',
-        headers: this._requestHeaders,
+        headers: this.requestHeaders,
         body: JSON.stringify(entity),
         credentials: 'include'
       }
@@ -177,7 +177,7 @@ export default class EntityApi {
       [CALL_API]: {
         types: this.generateRequestActionsOptions(RestMethods.REMOVE, {id: id}),
         endpoint: this._endpointUrl + queryString,
-        headers: this._requestHeaders,
+        headers: this.requestHeaders,
         method: 'DELETE',
         credentials: 'include'
       }
