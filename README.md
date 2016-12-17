@@ -120,9 +120,9 @@ export {TagsComponent, TagsContainer};
 
 Example of generated list reducer (basic CRUD operations)
 
-##Releases notes
+##Changelog
 
-- 2
+- v1.1.6 - Add source code to package. Workaround for issue with [babel and redux-api-middleware@1.1.2](https://github.com/agraboso/redux-api-middleware/issues/83)
 
 
 ###See also
