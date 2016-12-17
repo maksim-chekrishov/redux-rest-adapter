@@ -29,9 +29,9 @@
   "dependencies": {
     "redux-api-middleware": "1.0.2"
   },
-  "bundledDependencies": [
-    "redux-api-middleware"
-  ],
+  "peerDependencies":  {
+    "redux-api-middleware": "1.0.2"
+  },
   "devDependencies": {
     "lodash": "latest",
     "babel-cli": "^6.0.0",
