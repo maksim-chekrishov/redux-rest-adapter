@@ -1,6 +1,6 @@
 {
   "name": "redux-rest-adapter",
-  "version": "1.1.4",
+  "version": "1.1.6",
   "description": "REST adapter for redux",
   "main": "lib/index.js",
   "repository": {
@@ -27,7 +27,7 @@
   "author": "Maksim Chekrishov <maksim.chekrishov@gmail.com> (https://github.com/maksim-chekrishov)",
   "license": "ISC",
   "dependencies": {
-    "redux-api-middleware": "~1.0.1"
+    "redux-api-middleware": "1.0.2"
   },
   "bundledDependencies": [
     "redux-api-middleware"
