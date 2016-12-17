@@ -1,4 +1,4 @@
-import {CALL_API} from 'redux-api-middleware';
+import {CALL_API} from '../redux-api-middleware';
 import configureReducer from './configure-reducer.js';
 
 export const RestMethods = {

@@ -120,6 +120,11 @@ export {TagsComponent, TagsContainer};
 
 Example of generated list reducer (basic CRUD operations)
 
+##Releases notes
+
+- 2
+
+
 ###See also
 
 [redux-localstorage-adapter](https://www.npmjs.com/package/redux-localstorage-adapter)

@@ -1,6 +1,6 @@
 {
   "name": "redux-rest-adapter",
-  "version": "1.1.1",
+  "version": "1.1.5",
   "description": "REST adapter for redux",
   "main": "lib/index.js",
   "repository": {
@@ -20,14 +20,14 @@
   ],
   "scripts": {
     "build": "$(npm bin)/babel src -d lib",
-    "pub":"npm i && npm build && npm t && npm publish && git commit -am 'new version' && git push",
+    "pub": "npm i && npm build && npm t && npm publish && git commit -am 'new version' && git push",
     "prod": "npm i --production",
     "test": "jest"
   },
   "author": "Maksim Chekrishov <maksim.chekrishov@gmail.com> (https://github.com/maksim-chekrishov)",
   "license": "ISC",
   "dependencies": {
-    "redux-api-middleware": "~1.0.1"
+    "redux-api-middleware": "1.0.2"
   },
   "bundledDependencies": [
     "redux-api-middleware"
