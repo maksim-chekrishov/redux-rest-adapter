@@ -1,5 +1,5 @@
 import {CALL_API} from '../redux-api-middleware';
-import configureReducer from './configure-reducer.js';
+import ReducersBuilderDefault from './reducers-builder';
 
 export const RestMethods = {
   LOAD: 'load',
@@ -22,12 +22,18 @@ export const RequestStatuses = {
 export const orderedRequestStatusesArray = [RequestStatuses.REQUEST, RequestStatuses.SUCCESS, RequestStatuses.FAIL];
 
 export default class EntityApi {
+  _apiOptionsDefault = {
+    headers: {'Accept': 'application/json'}
+  }
+
   /**
    * Constructor
    *
    * @param {Object} options
    * @param {string} options.entityName - will be used for naming actionTypes
    * @param {string} options.endpointUrl
+   * @param {class} [options.ReducersBuilderCustom = ReducersBuilderDefault]
+   * @param {Object} [options.apiOptions = _apiOptionsDefault] - options for redux-api-middleware
    */
   constructor(options) {
     if (!options || !options.entityName || !options.endpointUrl) {
@@ -36,6 +42,9 @@ export default class EntityApi {
 
     this.entityName = options.entityName;
     this._endpointUrl = options.endpointUrl;
+
+    this.ReducersBuilder = options.ReducersBuilderCustom || ReducersBuilderDefault;
+    this._apiOptionsDefault = options.apiOptions || this._apiOptionsDefault;
   }
 
   /**
@@ -84,12 +93,6 @@ export default class EntityApi {
     return this._actionsTypes;
   }
 
-  get requestHeaders() {
-    return {
-      'Accept': 'application/json'
-    };
-  }
-
   generateRequestActionsOptions(methodName, meta) {
     return orderedRequestStatusesArray.map(eventName => ({
       type: `${this.entityName}_${methodName.toUpperCase()}_${eventName}`,
@@ -107,11 +110,7 @@ export default class EntityApi {
    * @param {Object} [initialState = {}]
    */
   configureReducer(reducerExtension, initialState = {}) {
-    return configureReducer(this, reducerExtension, initialState);
-  }
-
-  configureCRUDListReducer(reducerExtension, initialState = {}) {
-    return configureReducer(this, reducerExtension, initialState);
+    return this.ReducersBuilder.build(this.actionsTypes, reducerExtension, initialState);
   }
 
   serialize(obj) {
@@ -133,9 +132,8 @@ export default class EntityApi {
       [CALL_API]: {
         types: this.generateRequestActionsOptions(RestMethods.LOAD, params),
         endpoint: this._endpointUrl + queryString,
-        headers: this.requestHeaders,
         method: 'GET',
-        credentials: 'include'
+        ...this._apiOptionsDefault
       }
     };
   }
@@ -146,9 +144,8 @@ export default class EntityApi {
         types: this.generateRequestActionsOptions(RestMethods.CREATE, entity),
         endpoint: this._endpointUrl,
         method: 'POST',
-        headers: this.requestHeaders,
         body: JSON.stringify(entity),
-        credentials: 'include'
+        ...this._apiOptionsDefault
       }
     };
   }
@@ -160,7 +157,7 @@ export default class EntityApi {
         endpoint: this._endpointUrl + '/' + id,
         method: 'PUT',
         body: JSON.stringify(entity),
-        credentials: 'include'
+        ...this._apiOptionsDefault
       }
     };
   }
@@ -177,9 +174,8 @@ export default class EntityApi {
       [CALL_API]: {
         types: this.generateRequestActionsOptions(RestMethods.REMOVE, {id: id}),
         endpoint: this._endpointUrl + queryString,
-        headers: this.requestHeaders,
         method: 'DELETE',
-        credentials: 'include'
+        ...this._apiOptionsDefault
       }
     };
   }
