@@ -2,6 +2,8 @@
  * Created by m.chekryshov on 18.12.16.
  */
 
+import {containsString} from './utils';
+
 class ReducersBuilder {
   /**
    * Configure default list reducer extension with basic reactions on CRUD actions
@@ -12,7 +14,7 @@ class ReducersBuilder {
    * @param {string || Array.<string>} [actionsTypes.deleteSuccess]
    * @returns {Function} reducerExtension
    */
-  static buildCRUDextensionsForList({createSuccess, updateSuccess, deleteSuccess}) {
+  static buildCRUDExtensionsForList({createSuccess, updateSuccess, deleteSuccess}) {
     const opt = arguments[0];
 
     for (let key in opt) {
@@ -62,58 +64,44 @@ class ReducersBuilder {
    * Generate reducers for supplied entity api
    *
    * @param {Object} actionsTypesTree
-   * @param {Function} [reducerExtensions]
+   * @param {Function | Array.<Function>} [reducerExtensions]
    * @param {Object} [initialState= {}]
+   * @param {String} [operationsFlags="CRUD"]
    * @returns {Function} reducer
    */
-  static build(actionsTypesTree, reducerExtensions, initialState = {}) {
-    const _reduceRequest = this._reduceRequest;
-    const _reduceSuccess = this._reduceSuccess;
-    const _reduceFail = this._reduceFail;
+  static build(actionsTypesTree, reducerExtensions, initialState = {}, operationsFlags = 'CRUDS') {
+    const normalizedFlags = operationsFlags.toLowerCase();
+
+    const reducerParts = [];
+
+    containsString(normalizedFlags, 'c') && reducerParts.push(this._buildReducerForOperation(actionsTypesTree.CREATE));
+    containsString(normalizedFlags, 'r') && reducerParts.push(this._buildReducerForOperation(actionsTypesTree.LOAD));
+    containsString(normalizedFlags, 'u') && reducerParts.push(this._buildReducerForOperation(actionsTypesTree.UPDATE));
+    containsString(normalizedFlags, 'd') && reducerParts.push(this._buildReducerForOperation(actionsTypesTree.REMOVE));
+
+    // Silent actions
+    containsString(normalizedFlags, 's') && reducerParts.push(this._buildSilentActionsReducer(actionsTypesTree));
+
+    if (reducerExtensions) {
+      Array.isArray(reducerExtensions)
+        ? reducerParts.push(...reducerExtensions)
+        : reducerParts.push(reducerExtensions);
+    }
 
     return function(state = initialState, action = {}) {
+      let _state = state;
+
+      reducerParts.forEach((reduce)=> {
+        _state = reduce(_state, action);
+      });
+
+      return _state;
+    };
+  }
+
+  static _buildSilentActionsReducer(actionsTypesTree) {
+    return (state, action) => {
       switch (action.type) {
-        /**
-         * LOAD
-         */
-        case actionsTypesTree.LOAD.REQUEST:
-          return _reduceRequest(state, action);
-        case actionsTypesTree.LOAD.SUCCESS:
-          return _reduceSuccess(state, action);
-        case actionsTypesTree.LOAD.FAIL:
-          return _reduceFail(state, action);
-        /**
-         * UPDATE
-         */
-        case actionsTypesTree.UPDATE.REQUEST:
-          return _reduceRequest(state, action);
-        case actionsTypesTree.UPDATE.SUCCESS:
-          return _reduceSuccess(state, action);
-        case actionsTypesTree.UPDATE.FAIL:
-          return _reduceFail(state, action);
-        /**
-         * CREATE
-         */
-        case actionsTypesTree.CREATE.REQUEST:
-          return _reduceRequest(state, action);
-        case actionsTypesTree.CREATE.SUCCESS:
-          return _reduceSuccess(state, action);
-        case actionsTypesTree.CREATE.FAIL:
-          return _reduceFail(state, action);
-        /**
-         * REMOVE
-         */
-        case actionsTypesTree.REMOVE.REQUEST:
-          return _reduceRequest(state, action);
-        case actionsTypesTree.REMOVE.SUCCESS:
-          return initialState;
-        case actionsTypesTree.REMOVE.FAIL:
-          return _reduceFail(state, action);
-
-
-        /**
-         * Silent actions, with
-         */
 
         case actionsTypesTree.RESET:
           return initialState;
@@ -121,22 +109,32 @@ class ReducersBuilder {
 
         case actionsTypesTree.SET:
           return Object.assign({}, state, {
-            data: _.isArray(state.data)
+            data: Array.isArray(state.data)
               ? [].concat(action.payload.result)
               : Object.assign({}, state.data, action.payload.result)
           });
 
-        /**
-         * Reducer extensions
-         */
-
-        default :
-          return reducerExtensions
-            ? reducerExtensions(state, action)
-            : state;
+        default:
+          return state;
       }
+    }
+  }
+
+  static _buildReducerForOperation(operationActionsTypes) {
+    return (state, action) => {
+      const actionType = action.type;
+
+      if (operationActionsTypes.REQUEST === actionType) {
+        return this._reduceRequest(state, action);
+      } else if (operationActionsTypes.SUCCESS === actionType) {
+        return this._reduceSuccess(state, action);
+      } else if (operationActionsTypes.FAIL === actionType) {
+        return this._reduceFail(state, action);
+      }
+      return state;
     };
   }
+
 
   //
   // Common reducer functions

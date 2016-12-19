@@ -2,7 +2,7 @@
  * Created by m.chekryshov on 03.10.16.
  */
 import EntityApi from '../lib';
-import {configureCRUDListReducerExtension} from  '../lib/configure-reducer';
+import ReducersBuilder from  '../lib/reducers-builder';
 import _ from 'lodash';
 
 describe('EntityApi', ()=> {
@@ -15,7 +15,7 @@ describe('EntityApi', ()=> {
       DeletedActionType: ['DELETE_SUCCESS', 'ANOTHER_DELETE_SUCCESS']
     };
 
-    const crudReducerExtension = configureCRUDListReducerExtension({
+    const crudReducerExtension = ReducersBuilder.buildCRUDExtensionsForList({
       createSuccess: CreatedActionType,
       updateSuccess: UpdatedActionType,
       deleteSuccess: DeletedActionType
