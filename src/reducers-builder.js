@@ -97,12 +97,7 @@ class ReducersBuilder {
         case actionsTypesTree.CREATE.REQUEST:
           return _reduceRequest(state, action);
         case actionsTypesTree.CREATE.SUCCESS:
-          return Object.assign({}, state, {
-            pending: false,
-            error: false,
-            data: action.payload.result,
-            meta: action.meta
-          });
+          return _reduceSuccess(state, action);
         case actionsTypesTree.CREATE.FAIL:
           return _reduceFail(state, action);
         /**
@@ -153,17 +148,17 @@ class ReducersBuilder {
       meta: action.meta,
       // status 500 is not fail for fetch, see explanations https://www.tjvantoll.com/2015/09/13/fetch-and-errors/
       error: !!action.error,
-      data: state.data,
-      messages: action.payload ? action.payload.messages : []
+      messages: action.payload ? action.payload.messages : [],
+      data: state.data
     });
   }
 
   static _reduceSuccess(state, action) {
     return Object.assign({}, state, {
       pending: false,
+      meta: action.meta,
       error: false,
       data: action.payload.result,
-      meta: action.meta,
       totals: action.payload.totals
     });
   }
@@ -171,10 +166,10 @@ class ReducersBuilder {
   static _reduceFail(state, action) {
     return Object.assign({}, state, {
       pending: false,
+      meta: action.meta,
       error: true,
-      messages: action.payload.messages,
-      data: state.data,
-      meta: action.meta
+      messages: action.payload ? action.payload.messages : [],
+      data: state.data
     });
   }
 }
