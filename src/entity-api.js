@@ -22,9 +22,17 @@ export const RequestStatuses = {
 export const orderedRequestStatusesArray = [RequestStatuses.REQUEST, RequestStatuses.SUCCESS, RequestStatuses.FAIL];
 
 export default class EntityApi {
-  _apiOptionsDefault = {
-    headers: {'Accept': 'application/json'}
+  /**
+   * Default api options
+   *
+   * @type {Object}
+   * @private
+   */
+  _apiOptions = {
+    headers: {'Accept': 'application/json'},
   }
+
+  _resourceKey = 'data'
 
   /**
    * Constructor
@@ -33,18 +41,21 @@ export default class EntityApi {
    * @param {string} options.entityName - will be used for naming actionTypes
    * @param {string} options.endpointUrl
    * @param {class} [options.ReducersBuilderCustom = ReducersBuilderDefault]
-   * @param {Object} [options.apiOptions = _apiOptionsDefault] - options for redux-api-middleware
+   * @param {Object} [options.apiOptions = _apiOptions] - options for redux-api-middleware
+   * @param {string} [options.resourceKey = _resourceKey] - payload resource key (entity data key)
    */
   constructor(options) {
     if (!options || !options.entityName || !options.endpointUrl) {
       throw new Error('entityName and endpointUrl are required');
     }
 
-    this.entityName = options.entityName;
+    this._entityName = options.entityName;
     this._endpointUrl = options.endpointUrl;
 
+    // Options with default values
     this.ReducersBuilder = options.ReducersBuilderCustom || ReducersBuilderDefault;
-    this._apiOptionsDefault = options.apiOptions || this._apiOptionsDefault;
+    this._apiOptions = options.apiOptions || this._apiOptions;
+    this._resourceKey = options.resourceKey || this._resourceKey;
   }
 
   /**
@@ -95,13 +106,13 @@ export default class EntityApi {
 
   generateRequestActionsOptions(methodName, meta) {
     return orderedRequestStatusesArray.map(eventName => ({
-      type: `${this.entityName}_${methodName.toUpperCase()}_${eventName}`,
+      type: `${this._entityName}_${methodName.toUpperCase()}_${eventName}`,
       meta
     }));
   }
 
   generateSilentActionType(methodName) {
-    return `${this.entityName}_${methodName.toUpperCase()}`;
+    return `${this._entityName}_${methodName.toUpperCase()}`;
   }
 
   /**
@@ -110,7 +121,11 @@ export default class EntityApi {
    * @param {Object} [initialState = {}]
    */
   configureReducer(reducerExtension, initialState = {}) {
-    return this.ReducersBuilder.build(this.actionsTypes, reducerExtension, initialState);
+    return this.ReducersBuilder.build(this.actionsTypes, reducerExtension, this._resourceKey, initialState);
+  }
+
+  configureCRUDExtensionsForList() {
+
   }
 
   serialize(obj) {
@@ -133,7 +148,7 @@ export default class EntityApi {
         types: this.generateRequestActionsOptions(RestMethods.LOAD, params),
         endpoint: this._endpointUrl + queryString,
         method: 'GET',
-        ...this._apiOptionsDefault
+        ...this._apiOptions
       }
     };
   }
@@ -145,7 +160,7 @@ export default class EntityApi {
         endpoint: this._endpointUrl,
         method: 'POST',
         body: JSON.stringify(entity),
-        ...this._apiOptionsDefault
+        ...this._apiOptions
       }
     };
   }
@@ -157,7 +172,7 @@ export default class EntityApi {
         endpoint: this._endpointUrl + '/' + id,
         method: 'PUT',
         body: JSON.stringify(entity),
-        ...this._apiOptionsDefault
+        ...this._apiOptions
       }
     };
   }
@@ -175,7 +190,7 @@ export default class EntityApi {
         types: this.generateRequestActionsOptions(RestMethods.REMOVE, {id: id}),
         endpoint: this._endpointUrl + queryString,
         method: 'DELETE',
-        ...this._apiOptionsDefault
+        ...this._apiOptions
       }
     };
   }
@@ -188,17 +203,17 @@ export default class EntityApi {
    * @returns {{type: string, payload: {result: *}}}
    * @constructor
    */
-  [SilentMethods.SET](data) {
+  [SilentMethods.SET](resource) {
     return {
       type: this.generateSilentActionType(SilentMethods.SET),
       payload: {
-        result: data
+        [this._apiOptions.resourceKey]: resource
       }
     };
   }
 
   /**
-   * Provide ability to reset data in entity storage
+   * Provide ability to reset resource in entity storage
    * without server synchronization
    *
    * @returns {{type: string, payload: {result: *}}}

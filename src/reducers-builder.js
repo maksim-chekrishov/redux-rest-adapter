@@ -14,7 +14,7 @@ class ReducersBuilder {
    * @param {string || Array.<string>} [actionsTypes.deleteSuccess]
    * @returns {Function} reducerExtension
    */
-  static buildCRUDExtensionsForList({createSuccess, updateSuccess, deleteSuccess}) {
+  static buildCRUDExtensionsForList({createSuccess, updateSuccess, deleteSuccess}, resourceKey) {
     const opt = arguments[0];
 
     for (let key in opt) {
@@ -36,24 +36,24 @@ class ReducersBuilder {
          */
         id = action.meta.id;
         clone = Object.assign({}, state);
-        clone.data = clone.data ? clone.data.filter((item)=>(item.id !== id)) : [];
+        clone[resourceKey] = clone[resourceKey] ? clone[resourceKey].filter((item)=>(item.id !== id)) : [];
         return clone;
       } else if (updateSuccess && updateSuccess.indexOf(actionType) !== -1) {
         /**
          * after successfully update we need update item at the list
          */
-        id = action.payload.result.id;
-        result = action.payload.result;
+        id = action.payload[resourceKey].id;
+        result = action.payload[resourceKey];
         clone = Object.assign({}, state);
-        clone.data = clone.data ? clone.data.map((item)=>(item.id !== id ? item : result)) : [];
+        clone[resourceKey] = clone[resourceKey] ? clone[resourceKey].map((item)=>(item.id !== id ? item : result)) : [];
         return clone;
       } else if (createSuccess && createSuccess.indexOf(actionType) !== -1) {
         /**
          * after creation new item we need add it to the list
          */
-        result = action.payload.result;
+        result = action.payload[resourceKey];
         clone = Object.assign({}, state);
-        clone.data = clone.data ? clone.data.concat([result]) : [];
+        clone[resourceKey] = clone[resourceKey] ? clone[resourceKey].concat([result]) : [];
         return clone;
       }
       return state;
@@ -65,11 +65,12 @@ class ReducersBuilder {
    *
    * @param {Object} actionsTypesTree
    * @param {Function | Array.<Function>} [reducerExtensions]
+   * @param {String} resourceKey
    * @param {Object} [initialState= {}]
    * @param {String} [operationsFlags="CRUD"]
    * @returns {Function} reducer
    */
-  static build(actionsTypesTree, reducerExtensions, initialState = {}, operationsFlags = 'CRUDS') {
+  static build(actionsTypesTree, reducerExtensions, resourceKey, initialState = {}, operationsFlags = 'CRUDS') {
     const normalizedFlags = operationsFlags.toLowerCase();
 
     const reducerParts = [];
@@ -80,7 +81,7 @@ class ReducersBuilder {
     containsString(normalizedFlags, 'd') && reducerParts.push(this._buildReducerForOperation(actionsTypesTree.REMOVE));
 
     // Silent actions
-    containsString(normalizedFlags, 's') && reducerParts.push(this._buildSilentActionsReducer(actionsTypesTree));
+    containsString(normalizedFlags, 's') && reducerParts.push(this._buildSilentActionsReducer(actionsTypesTree, resourceKey));
 
     if (reducerExtensions) {
       Array.isArray(reducerExtensions)
@@ -99,7 +100,7 @@ class ReducersBuilder {
     };
   }
 
-  static _buildSilentActionsReducer(actionsTypesTree) {
+  static _buildSilentActionsReducer(actionsTypesTree, resourceKey) {
     return (state, action) => {
       switch (action.type) {
 
@@ -109,9 +110,9 @@ class ReducersBuilder {
 
         case actionsTypesTree.SET:
           return Object.assign({}, state, {
-            data: Array.isArray(state.data)
-              ? [].concat(action.payload.result)
-              : Object.assign({}, state.data, action.payload.result)
+            [resourceKey]: Array.isArray(state[resourceKey])
+              ? [].concat(action.payload[resourceKey])
+              : Object.assign({}, state[resourceKey], action.payload[resourceKey])
           });
 
         default:
@@ -142,32 +143,29 @@ class ReducersBuilder {
 
   static _reduceRequest(state, action) {
     return Object.assign({}, state, {
-      pending: true,
-      meta: action.meta,
+      _pending: true,
+      _actionMeta: action.meta,
       // status 500 is not fail for fetch, see explanations https://www.tjvantoll.com/2015/09/13/fetch-and-errors/
-      error: !!action.error,
-      messages: action.payload ? action.payload.messages : [],
-      data: state.data
+      _error: !!action.error,
+      ...action.payload
     });
   }
 
   static _reduceSuccess(state, action) {
     return Object.assign({}, state, {
-      pending: false,
-      meta: action.meta,
-      error: false,
-      data: action.payload.result,
-      totals: action.payload.totals
+      _pending: false,
+      _actionMeta: action.meta,
+      _error: false,
+      ...action.payload
     });
   }
 
   static _reduceFail(state, action) {
     return Object.assign({}, state, {
-      pending: false,
-      meta: action.meta,
-      error: true,
-      messages: action.payload ? action.payload.messages : [],
-      data: state.data
+      _pending: false,
+      _actionMeta: action.meta,
+      _error: true,
+      ...action.payload
     });
   }
 }
