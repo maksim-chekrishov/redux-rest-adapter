@@ -19,30 +19,30 @@
     "redux-rest"
   ],
   "scripts": {
-    "build": "$(npm bin)/babel src -d lib",
-    "pub":"npm i && npm build && npm t && npm publish && git commit -am 'new version' && git push",
-    "prod": "npm i --production",
-    "test": "jest"
+    "build": "export NODE_ENV=development; npm i && $(npm bin)/babel src -d dist",
+    "prepub": "npm t",
+    "test": "npm run build && (node tests/server/server.js & jest)"
   },
   "author": "Maksim Chekrishov <maksim.chekrishov@gmail.com> (https://github.com/maksim-chekrishov)",
   "license": "ISC",
   "dependencies": {
     "redux-api-middleware": "1.0.2"
   },
-  "peerDependencies":  {
+  "peerDependencies": {
     "redux-api-middleware": "1.0.2"
   },
   "devDependencies": {
-    "lodash": "latest",
     "babel-cli": "^6.0.0",
+    "babel-core": "latest",
+    "babel-eslint": "latest",
     "babel-jest": "^17.0.2",
     "babel-polyfill": "^6.20.0",
+    "babel-preset-es2015": "~6.0.15",
+    "babel-preset-stage-0": "~6.0.15",
     "eslint": "~1.10.3",
     "eslint-config-rambler": "0.0.3",
     "jest-cli": "~15.1.1",
-    "babel-core": "latest",
-    "babel-eslint": "latest",
-    "babel-preset-es2015": "~6.0.15",
-    "babel-preset-stage-0": "~6.0.15"
+    "json-server": "0.9.4",
+    "lodash": "latest"
   }
 }
