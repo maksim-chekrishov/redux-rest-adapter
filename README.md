@@ -18,7 +18,8 @@ export const KnownEntitiesUrls = {
 };
 export default _.mapValues(KnownEntitiesUrls, (url, name)=> new EntityApi({
   entityName: name,
-  endpointUrl: config.endpointRoot + url
+  endpointUrl: config.endpointRoot + url,
+  resourceKey: 'result' // data key at payload, default - 'data'
 }));
 ```
 
