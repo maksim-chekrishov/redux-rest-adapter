@@ -19,19 +19,23 @@
     "redux-rest"
   ],
   "scripts": {
-    "build": "export NODE_ENV=development; npm i && $(npm bin)/babel src -d dist",
+    "build": "export NODE_ENV=development; npm i && $(npm bin)/babel src -d lib",
     "prepub": "npm t",
-    "test": "npm run build && (node tests/server/server.js & jest)"
+    "test": "npm run build && jest",
+    "test:server": "npm run build && (node tests/server/server.js & jest)"
   },
   "author": "Maksim Chekrishov <maksim.chekrishov@gmail.com> (https://github.com/maksim-chekrishov)",
   "license": "ISC",
   "dependencies": {
-    "redux-api-middleware": "1.0.2"
+    "axios": "0.15.2",
+    "redux-api-middleware": "1.0.2",
+    "redux-promise-middleware": "^4.2.0"
   },
   "peerDependencies": {
     "redux-api-middleware": "1.0.2"
   },
   "devDependencies": {
+    "axios-mock-adapter": "^1.7.1",
     "babel-cli": "^6.0.0",
     "babel-core": "latest",
     "babel-eslint": "latest",
@@ -42,7 +46,13 @@
     "eslint": "~1.10.3",
     "eslint-config-rambler": "0.0.3",
     "jest-cli": "~15.1.1",
-    "json-server": "0.9.4",
-    "lodash": "latest"
+    "lodash": "latest",
+    "redux": "^3.6.0",
+    "redux-mock-store": "^1.2.1"
+  },
+  "jest": {
+    "setupFiles": [
+      "tests/config/global-mocks.js"
+    ]
   }
 }

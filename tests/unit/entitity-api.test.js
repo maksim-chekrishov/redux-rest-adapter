@@ -1,5 +1,5 @@
-import EntityApi from '../lib';
-import {CALL_API} from '../redux-api-middleware';
+import EntityApi from '../../lib';
+import {CALL_API} from '../../redux-api-middleware';
 
 describe('EntityApi', ()=> {
   let apiInstance;
@@ -27,6 +27,6 @@ describe('EntityApi', ()=> {
   });
 
   it('should should be able to use custom option for api', ()=> {
-    expect(apiInstance.load(1)[CALL_API].test).toBe('test');
+    expect(apiInstance.load(1).test).toBe('test');
   });
 });

@@ -1,7 +1,7 @@
 /**
  * Created by m.chekryshov on 03.10.16.
  */
-import {EntityApi, ReducersBuilder} from '../lib';
+import {EntityApi, ReducersBuilder} from '../../lib';
 import _ from 'lodash';
 
 describe('EntityApi', ()=> {

@@ -1,5 +1,6 @@
 import {CALL_API} from '../redux-api-middleware';
 import ReducersBuilderDefault from './reducers-builder';
+import axios from 'axios';
 
 export const RestMethods = {
   LOAD: 'load',
@@ -97,11 +98,15 @@ export default class EntityApi {
       }
 
       for (let key in SilentMethods) {
-        _this.actionsTypes[key] = _this.generateSilentActionType(SilentMethods[key])
+        _this.actionsTypes[key] = _this._getActionTypeForMethod(SilentMethods[key])
       }
     }
 
     return this._actionsTypes;
+  }
+
+  _getActionTypeForMethod(apiMethodName) {
+    return `${this._entityName}_${apiMethodName.toUpperCase()}`
   }
 
   generateRequestActionsOptions(methodName, meta) {
@@ -109,10 +114,6 @@ export default class EntityApi {
       type: `${this._entityName}_${methodName.toUpperCase()}_${eventName}`,
       meta
     }));
-  }
-
-  generateSilentActionType(methodName) {
-    return `${this._entityName}_${methodName.toUpperCase()}`;
   }
 
   /**
@@ -124,9 +125,6 @@ export default class EntityApi {
     return this.ReducersBuilder.build(this.actionsTypes, reducerExtension, this._resourceKey, initialState);
   }
 
-  configureCRUDExtensionsForList() {
-
-  }
 
   serialize(obj) {
     if (!obj) {
@@ -143,37 +141,33 @@ export default class EntityApi {
    */
   [RestMethods.LOAD](params) {
     const queryString = parseInt(params, 10) ? '/' + params : this.serialize(params);
+
     return {
-      [CALL_API]: {
-        types: this.generateRequestActionsOptions(RestMethods.LOAD, params),
-        endpoint: this._endpointUrl + queryString,
-        method: 'GET',
-        ...this._apiOptions
-      }
-    };
+      type: this._getActionTypeForMethod(RestMethods.LOAD),
+      payload: axios.get(this._endpointUrl + queryString).then(res => res.data),
+      ...this._apiOptions
+    }
   }
 
   [RestMethods.CREATE](entity) {
     return {
-      [CALL_API]: {
-        types: this.generateRequestActionsOptions(RestMethods.CREATE, entity),
-        endpoint: this._endpointUrl,
-        method: 'POST',
-        body: JSON.stringify(entity),
-        ...this._apiOptions
-      }
+      type: this._getActionTypeForMethod(RestMethods.CREATE),
+      payload: axios.post(this._endpointUrl,
+        {
+          [this._resourceKey]: entity
+        }).then(res => res.data),
+      ...this._apiOptions
     };
   }
 
   [RestMethods.UPDATE](id, entity) {
     return {
-      [CALL_API]: {
-        types: this.generateRequestActionsOptions(RestMethods.UPDATE, entity),
-        endpoint: this._endpointUrl + '/' + id,
-        method: 'PUT',
-        body: JSON.stringify(entity),
-        ...this._apiOptions
-      }
+      type: this._getActionTypeForMethod(RestMethods.UPDATE),
+      payload: axios.put(`${this._endpointUrl}/${id}`,
+        {
+            [this._resourceKey]: entity
+        }).then(res => res.data),
+      ...this._apiOptions
     };
   }
 
@@ -184,14 +178,11 @@ export default class EntityApi {
    * @returns {Object}
    */
   [RestMethods.REMOVE](id = '') {
-    const queryString = id ? '/' + id : id;
     return {
-      [CALL_API]: {
-        types: this.generateRequestActionsOptions(RestMethods.REMOVE, {id: id}),
-        endpoint: this._endpointUrl + queryString,
-        method: 'DELETE',
-        ...this._apiOptions
-      }
+      type: this._getActionTypeForMethod(RestMethods.UPDATE),
+      payload: axios.delete(`${this._endpointUrl}/${id}`).then(res => res.data),
+      meta: {id},
+      ...this._apiOptions
     };
   }
 
@@ -205,9 +196,9 @@ export default class EntityApi {
    */
   [SilentMethods.SET](resource) {
     return {
-      type: this.generateSilentActionType(SilentMethods.SET),
+      type: this._getActionTypeForMethod(SilentMethods.SET),
       payload: {
-        [this._apiOptions.resourceKey]: resource
+        [this._resourceKey]: resource
       }
     };
   }
@@ -221,7 +212,7 @@ export default class EntityApi {
    */
   [SilentMethods.RESET]() {
     return {
-      type: this.generateSilentActionType(SilentMethods.RESET)
+      type: this._getActionTypeForMethod(SilentMethods.RESET)
     };
   }
 }
