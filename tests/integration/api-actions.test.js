@@ -1,25 +1,16 @@
 import EntityApi from '../../lib';
-import axios from 'axios';
 
-
-xdescribe('EntityApi', () => { // wait for solving issue wit axios mock
+describe('EntityApi', () => {
   const resourceKey = 'testResKey';
+
   let store,
     apiInstance,
     ActionsTypes,
     expectedResource;
 
-
-  afterEach(() => {
-    mockAxios.reset();
-    //moxios.uninstall()
-  })
-
   beforeEach(() => {
-    //moxios.install()
-
     store = mockStore({entities: {TEST: {}}});
-    store.dispatch = jest.fn(store.dispatch);
+    //store.dispatch = jest.fn(store.dispatch);
 
     apiInstance = new EntityApi({
       entityName: 'TEST',
@@ -31,39 +22,22 @@ xdescribe('EntityApi', () => { // wait for solving issue wit axios mock
     ActionsTypes = apiInstance.actionsTypes;
   })
 
+  afterEach(()=> {
+    mockAxios.reset();
+  })
+
   // --------------------- LOAD --------------------------
 
   it('should be able to load resource', () => {
+    mockAxios.onGet('/test').reply(200, {[resourceKey]: expectedResource});
+
     const expectedActions = [
       {type: ActionsTypes.LOAD.REQUEST},
       {type: ActionsTypes.LOAD.SUCCESS, payload: {[resourceKey]: expectedResource}}
     ];
-    mockAxios
-      .onGet('/test')
-      .reply(config => {
-        return [
-          200,
-          {[resourceKey]: expectedResource}
-        ];
-      });
 
-    // moxios.wait(() => {
-    //   const request = moxios.requests.mostRecent()
-    //
-    //   request.respondWith({
-    //     status: 200,
-    //     response: {[apiInstance._resourceKey]: expectedResource}
-    //   }).then(function() {
-    //     expect(store.getActions()).toEqual(1);
-    //   });
-    // });
-
-    axios.get('/test').catch(function(response) {
-      console.log(response.data);
-    });
-
-    store.dispatch(apiInstance.actions.load()).then(res => {
-      expect(store.getActions()).toEqual(1);
+    return store.dispatch(apiInstance.actions.load()).then(res => {
+      return expect(store.getActions()).toEqual(expectedActions);
     });
   })
 
@@ -73,139 +47,83 @@ xdescribe('EntityApi', () => { // wait for solving issue wit axios mock
       {type: ActionsTypes.LOAD.SUCCESS, payload: {[resourceKey]: expectedResource}}
     ];
 
-    // mockAxios
-    //   .onGet('/test/1')
-    //   .reply(config => {
-    //     return [
-    //       200,
-    //       {[resourceKey]: expectedResource}
-    //     ];
-    //   });
+    mockAxios.onGet('/test/1').reply(200, {[resourceKey]: expectedResource});
 
-    store.dispatch(apiInstance.actions.load(1)).then(res => {
-      expect(store.getActions()).toEqual(expectedActions);
+    return store.dispatch(apiInstance.actions.load(1)).then(res => {
+      return expect(store.getActions()).toEqual(expectedActions);
     });
   })
 
   it('should be able to process load fail', () => {
-    const expectedAction = {
-      type: ActionsTypes.LOAD.FAIL,
-      error: true
-    };
+    mockAxios.onGet('/test/2').reply(500, {});
 
-    // mockAxios
-    //   .onGet('/test')
-    //   .reply(config => {
-    //     return [
-    //       500,
-    //       {[resourceKey]: expectedResource}
-    //     ];
-    //   });
-
-    store.dispatch(apiInstance.actions.load()).catch(res => {
+    return store.dispatch(apiInstance.actions.load(2)).catch(res => {
       let lastAction = store.getActions();
       lastAction = lastAction[lastAction.length - 1];
-      expect(lastAction.error).toEqual(true);
-      expect(lastAction.type).toEqual(ActionsTypes.LOAD.FAIL);
+
+      const hasError = !!lastAction.error;
+      const isFailed = lastAction.type === ActionsTypes.LOAD.FAIL;
+
+      return expect(isFailed && hasError && res.response.status == 500).toEqual(true);
     });
   })
 
   // --------------------- CREATE --------------------------
 
-  xit('should be able to create resource', () => {
+  it('should be able to create resource', () => {
     const expectedActions = [
       {type: ActionsTypes.CREATE.REQUEST},
       {type: ActionsTypes.CREATE.SUCCESS, payload: {[resourceKey]: expectedResource}}
     ];
 
-    // mockAxios.onAny().reply(500);
+    mockAxios.onPost('/test').reply(200, {[resourceKey]: expectedResource});
 
-    axios.post('/test')
-      .catch(function(response) {
-        console.log(response);
-      });
-
-    store.dispatch(apiInstance.actions.create(expectedResource)).catch(res => {
+    return store.dispatch(apiInstance.actions.create(expectedResource)).catch(res => {
       const actions = store.getActions();
-      // console.log(apiInstance.actions.create(expectedResource));
-      // console.log(actions);
-      expect(actions).toEqual(expectedActions);
+
+      return expect(actions).toEqual(expectedActions);
     });
   })
 
-  xit('should be able to process create fail', () => {
-    const expectedAction = {
-      type: ActionsTypes.CREATE.FAIL,
-      error: true
-    };
+  it('should be able to process create fail', () => {
+    mockAxios.onPost('/test').reply(500, {});
 
-    // mockAxios
-    //   .onPost('/test')
-    //   .reply(config => {
-    //     return [
-    //       500,
-    //       {[resourceKey]: expectedResource}
-    //     ];
-    //   });
-
-
-    store.dispatch(apiInstance.actions.create()).catch(res => {
+    return store.dispatch(apiInstance.actions.create()).catch(res => {
       let lastAction = store.getActions();
       lastAction = lastAction[lastAction.length - 1];
 
-      expect(lastAction.error).toEqual(true);
-      expect(lastAction.type).toEqual(ActionsTypes.CREATE.FAIL);
+      return expect(!!lastAction.error &&
+        lastAction.type === ActionsTypes.CREATE.FAIL &&
+        res.response.status == 500
+      ).toEqual(true);
     });
   })
 
 
   // --------------------- UPDATE --------------------------
 
-  xit('should be able to up resource', () => {
-    const expectedActions = [
-      {type: ActionsTypes.UPDATE.REQUEST},
-      {type: ActionsTypes.UPDATE.SUCCESS, payload: {[resourceKey]: expectedResource}}
-    ];
+  it('should be able to update resource', () => {
+    mockAxios.onPut('/test/1').reply(200, {[resourceKey]: expectedResource});
 
-    // mockAxios
-    //   .onAny('/test')
-    //   .reply(config => {
-    //     return [
-    //       200,
-    //       {[resourceKey]: expectedResource}
-    //     ];
-    //   });
-
-    store.dispatch(apiInstance.actions.update()).then(res => {
+    return store.dispatch(apiInstance.actions.update(1)).then(res => {
       const actions = store.getActions();
+      const lastAction = actions[actions.length - 1];
 
-      expect(actions[actions.length - 1].method).toEqual('put');
-      expect(actions).toEqual(expectedActions);
+      return expect(lastAction.type === ActionsTypes.UPDATE.SUCCESS).toEqual(true);
     });
   })
 
-  xit('should be able to process create fail', () => {
-    const expectedAction = {
-      type: ActionsTypes.CREATE.FAIL,
-      error: true
-    };
+  it('should be able to process create fail', () => {
+    mockAxios.onPut('/test/44').reply(500, {});
 
-    // mockAxios
-    //   .onPost('/test')
-    //   .reply(config => {
-    //     return [
-    //       500,
-    //       {[resourceKey]: expectedResource}
-    //     ];
-    //   });
-
-    store.dispatch(apiInstance.actions.update()).catch(res => {
+    return store.dispatch(apiInstance.actions.update(44)).catch(res => {
       let lastAction = store.getActions();
       lastAction = lastAction[lastAction.length - 1];
 
-      expect(lastAction.error).toEqual(true);
-      expect(lastAction.type).toEqual(ActionsTypes.CREATE.FAIL);
-      expect(lastAction.method).toEqual('put');
+      return expect(!!lastAction.error &&
+        lastAction.type === ActionsTypes.UPDATE.FAIL &&
+        res.response.status == 500
+      ).toEqual(true);
     });
   })
 
