@@ -75,6 +75,14 @@ class ReducersBuilder {
 
     const reducerParts = [];
 
+
+    //  Extension has top level priority to provide ability override default behaviour
+    if (reducerExtensions) {
+      Array.isArray(reducerExtensions)
+        ? reducerParts.push(...reducerExtensions)
+        : reducerParts.push(reducerExtensions);
+    }
+
     containsString(normalizedFlags, 'c') && reducerParts.push(this._buildReducerForOperation(actionsTypesTree.CREATE));
     containsString(normalizedFlags, 'r') && reducerParts.push(this._buildReducerForOperation(actionsTypesTree.LOAD));
     containsString(normalizedFlags, 'u') && reducerParts.push(this._buildReducerForOperation(actionsTypesTree.UPDATE));
@@ -82,12 +90,6 @@ class ReducersBuilder {
 
     // Silent actions
     containsString(normalizedFlags, 's') && reducerParts.push(this._buildSilentActionsReducer(actionsTypesTree, resourceKey));
-
-    if (reducerExtensions) {
-      Array.isArray(reducerExtensions)
-        ? reducerParts.push(...reducerExtensions)
-        : reducerParts.push(reducerExtensions);
-    }
 
     return function(state = initialState, action = {}) {
       let _state = state;
@@ -145,7 +147,6 @@ class ReducersBuilder {
     return Object.assign({}, state, {
       _pending: true,
       _actionMeta: action.meta,
-      // status 500 is not fail for fetch, see explanations https://www.tjvantoll.com/2015/09/13/fetch-and-errors/
       _error: !!action.error,
       ...action.payload
     });
