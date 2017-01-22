@@ -8,4 +8,4 @@ import {promiseMiddleware} from '../../lib'
 
 global.mockAxios = new AxiosMockAdapter(axios);
 
-global.mockStore = configureMockStore([promiseMiddleware]);
+global.mockStore = configureMockStore([promiseMiddleware()]);

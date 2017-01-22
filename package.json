@@ -28,11 +28,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "0.15.2",
-    "redux-api-middleware": "1.0.2",
-    "redux-promise-middleware": "^4.2.0"
-  },
-  "peerDependencies": {
-    "redux-api-middleware": "1.0.2"
+    "redux-promise-middleware": "4.2.0"
   },
   "devDependencies": {
     "axios-mock-adapter": "^1.7.1",

@@ -103,7 +103,7 @@ describe('EntityApi', () => {
   // --------------------- UPDATE --------------------------
 
   it('should be able to update resource', () => {
-    mockAxios.onPut('/test/1').reply(200, {[resourceKey]: expectedResource});
+    mockAxios.onPatch('/test/1').reply(200, {[resourceKey]: expectedResource});
 
     return store.dispatch(apiInstance.actions.update(1)).then(res => {
       const actions = store.getActions();
@@ -114,7 +114,7 @@ describe('EntityApi', () => {
   })
 
   it('should be able to process create fail', () => {
-    mockAxios.onPut('/test/44').reply(500, {});
+    mockAxios.onPatch('/test/44').reply(500, {});
 
     return store.dispatch(apiInstance.actions.update(44)).catch(res => {
       let lastAction = store.getActions();
@@ -126,5 +126,33 @@ describe('EntityApi', () => {
       ).toEqual(true);
     });
   })
+
+  // --------------------- DELETE --------------------------
+
+  it('should be able remove source', () => {
+    mockAxios.onAny('/test/1').reply(200, {});
+
+    return store.dispatch(apiInstance.actions.remove(1)).then(res => {
+      const actions = store.getActions();
+      const lastAction = actions[actions.length - 1];
+
+      return expect(lastAction.type).toEqual(ActionsTypes.REMOVE.SUCCESS);
+    });
+  })
+
+  it('should be able to process remove fail', () => {
+    mockAxios.onAny('/test/44').reply(500, {});
+
+    return store.dispatch(apiInstance.actions.remove(44)).catch(res => {
+      let lastAction = store.getActions();
+      lastAction = lastAction[lastAction.length - 1];
+
+      return expect(!!lastAction.error &&
+        lastAction.type === ActionsTypes.REMOVE.FAIL &&
+        res.response.status == 500
+      ).toEqual(true);
+    });
+  })
+
 
 })
