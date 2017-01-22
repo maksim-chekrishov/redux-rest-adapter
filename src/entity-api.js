@@ -35,6 +35,8 @@ export default class EntityApi {
 
   _restHttpMethods = RestHttpMethodsDefault;
 
+  _axiosConfig = undefined;
+
   /**
    * Constructor
    *
@@ -45,6 +47,7 @@ export default class EntityApi {
    * @param {class} [options.reducersBuilderCustom = reducersBuilderDefault]
    * @param {string} [options.resourceKey = _resourceKey] - payload resource key (entity data key)
    * @param {Object} [options.restHttpMethods = {'create': 'post','update': 'patch'}] - rest to HTTP methods mapping
+   * @param {Object} [options.axiosConfig] - rest to HTTP methods mapping
    */
   constructor(options) {
     if (!options || !options.entityName || !options.endpointUrl) {
@@ -58,6 +61,7 @@ export default class EntityApi {
     this._reducersBuilder = options.reducersBuilderCustom || this._reducersBuilder;
     this._resourceKey = options.resourceKey || this._resourceKey;
     this._restHttpMethods = options.restHttpMethods || this._restHttpMethods;
+    this._axiosConfig = options.axiosConfig || this._axiosConfig;
   }
 
   /**
@@ -136,39 +140,46 @@ export default class EntityApi {
   /**
    * Load entity
    *
-   * @param {Object} params
+   * @param {Object|Number} params
    * @returns {Object}
    */
   [RestMethods.LOAD](params) {
-    const queryString = parseInt(params, 10) ? '/' + params : this.serialize(params);
+    let queryString  = '';
+    let _params = {...params};
+
+    if(parseInt(params, 10)){
+      queryString = `/${params}`;
+      _params = undefined;
+    }
+
+    const config = {...this._axiosConfig, params: _params };
 
     return {
-      type: this._getActionTypeForMethod(RestMethods.LOAD),
-      payload: axios.get(this._endpointUrl + queryString).then(res => res.data)
+      type: this._getActionTypeForMethod(RestMethods.LOAD, config),
+      payload: axios.get(`${this._endpointUrl}${queryString}`)
+        .then(res => res.data)
     }
   }
 
   [RestMethods.CREATE](entity) {
     const createMethodName = this._restHttpMethods.create;
+    const data = {[this._resourceKey]: entity};
 
     return {
       type: this._getActionTypeForMethod(RestMethods.CREATE),
-      payload: axios[createMethodName](this._endpointUrl,
-        {
-          [this._resourceKey]: entity
-        }).then(res => res.data)
+      payload: axios[createMethodName](this._endpointUrl, data, this._axiosConfig)
+        .then(res => res.data)
     };
   }
 
   [RestMethods.UPDATE](id, entity) {
     const updateMethodName = this._restHttpMethods.update;
+    const data = {[this._resourceKey]: entity};
 
     return {
       type: this._getActionTypeForMethod(RestMethods.UPDATE),
-      payload: axios[updateMethodName](`${this._endpointUrl}/${id}`,
-        {
-          [this._resourceKey]: entity
-        }).then(res => res.data)
+      payload: axios[updateMethodName](`${this._endpointUrl}/${id}`, data)
+        .then(res => res.data)
     };
   }
 

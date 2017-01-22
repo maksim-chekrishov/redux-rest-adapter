@@ -1,4 +1,5 @@
 import EntityApi from '../../lib';
+//var MockAdapter = require('axios-mock-adapter');
 
 describe('EntityApi', () => {
   const resourceKey = 'testResKey';
@@ -14,8 +15,7 @@ describe('EntityApi', () => {
 
     apiInstance = new EntityApi({
       entityName: 'TEST',
-      endpointUrl: '/test',
-      apiOptions: {test: 'test'}
+      endpointUrl: '/test'
     });
 
     expectedResource = {id: 1, title: 'TITLE'};
@@ -153,6 +153,45 @@ describe('EntityApi', () => {
       ).toEqual(true);
     });
   })
+
+
+  describe('should provide ability to override http method for ',()=>{
+
+    beforeEach(()=>{
+      apiInstance = new EntityApi({
+        entityName: 'TEST',
+        endpointUrl: '/test',
+        restHttpMethods: { create: 'put', update:'post'}
+      });
+    })
+
+    it('update', () => {
+      mockAxios.onPost('/test/1').reply(200, {[resourceKey]: expectedResource});
+
+      return store.dispatch(apiInstance.actions.update(1)).then(res => {
+        const actions = store.getActions();
+        const lastAction = actions[actions.length - 1];
+
+        return expect(lastAction.type).toEqual(ActionsTypes.UPDATE.SUCCESS);
+      });
+    })
+
+    it('create', () => {
+      const expectedActions = [
+        {type: ActionsTypes.CREATE.REQUEST},
+        {type: ActionsTypes.CREATE.SUCCESS, payload: {[resourceKey]: expectedResource}}
+      ];
+
+      mockAxios.onPut('/test').reply(200, {[resourceKey]: expectedResource});
+
+      return store.dispatch(apiInstance.actions.create(expectedResource)).catch(res => {
+        const actions = store.getActions();
+
+        return expect(actions).toEqual(expectedActions);
+      });
+    })
+
+  });
 
 
 })
