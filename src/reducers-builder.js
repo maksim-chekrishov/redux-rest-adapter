@@ -12,9 +12,14 @@ class ReducersBuilder {
    * @param {string || Array.<string>} [actionsTypes.createSuccess]
    * @param {string || Array.<string>} [actionsTypes.updateSuccess]
    * @param {string || Array.<string>} [actionsTypes.deleteSuccess]
+   * @param {string} [resourceKey= 'data'] - response resource prop name
+   * @param {string} [idKey='id'] - resource id prop name
    * @returns {Function} reducerExtension
    */
-  static buildCRUDExtensionsForList({createSuccess, updateSuccess, deleteSuccess}, resourceKey) {
+  static buildCRUDExtensionsForList({createSuccess, updateSuccess, deleteSuccess}, resourceKey, idKey) {
+    resourceKey = resourceKey || 'data';
+    idKey = idKey || 'id';
+
     const opt = arguments[0];
 
     for (let key in opt) {
@@ -34,18 +39,18 @@ class ReducersBuilder {
         /**
          * after success we need remove item from list
          */
-        id = action.meta.id;
+        id = action.meta[idKey];
         clone = Object.assign({}, state);
-        clone[resourceKey] = clone[resourceKey] ? clone[resourceKey].filter((item)=>(item.id !== id)) : [];
+        clone[resourceKey] = clone[resourceKey] ? clone[resourceKey].filter(item=> item[idKey] !== id) : [];
         return clone;
       } else if (updateSuccess && updateSuccess.indexOf(actionType) !== -1) {
         /**
          * after successfully update we need update item at the list
          */
-        id = action.payload[resourceKey].id;
+        id = action.payload[resourceKey][idKey];
         result = action.payload[resourceKey];
         clone = Object.assign({}, state);
-        clone[resourceKey] = clone[resourceKey] ? clone[resourceKey].map((item)=>(item.id !== id ? item : result)) : [];
+        clone[resourceKey] = clone[resourceKey] ? clone[resourceKey].map((item)=>(item[idKey] !== id ? item : result)) : [];
         return clone;
       } else if (createSuccess && createSuccess.indexOf(actionType) !== -1) {
         /**
@@ -65,12 +70,12 @@ class ReducersBuilder {
    *
    * @param {Object} actionsTypesTree
    * @param {Function | Array.<Function>} [reducerExtensions]
-   * @param {String} resourceKey
+   * @param {string} [resourceKey= 'data'] - response resource prop name
    * @param {Object} [initialState= {}]
    * @param {String} [operationsFlags="CRUD"]
    * @returns {Function} reducer
    */
-  static build(actionsTypesTree, reducerExtensions, resourceKey, initialState = {}, operationsFlags = 'CRUDS') {
+  static build(actionsTypesTree, reducerExtensions, resourceKey = 'data', initialState = {}, operationsFlags = 'CRUDS') {
     const normalizedFlags = operationsFlags.toLowerCase();
 
     const reducerParts = [];

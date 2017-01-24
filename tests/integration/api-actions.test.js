@@ -1,9 +1,7 @@
 import EntityApi from '../../lib';
-//var MockAdapter = require('axios-mock-adapter');
 
 describe('EntityApi', () => {
   const resourceKey = 'testResKey';
-
   let store,
     apiInstance,
     ActionsTypes,
@@ -54,6 +52,37 @@ describe('EntityApi', () => {
     });
   })
 
+  // todo: need research axions mock doesn't work with params
+  xit('should be able to load resource by id with params', () => {
+    const expectedActions = [
+      {type: ActionsTypes.LOAD.REQUEST},
+      {type: ActionsTypes.LOAD.SUCCESS, payload: {[resourceKey]: expectedResource}}
+    ];
+
+    mockAxios.onGet('/test/1?param1=1').reply(200, {[resourceKey]: expectedResource});
+    // mockAxios.onGet().reply(config=> {
+    //   console.log(config);
+    // });
+
+    return store.dispatch(apiInstance.actions.load({id: 1, param1: 1})).then(() => {
+      return expect(store.getActions()).toEqual(expectedActions);
+    });
+  })
+
+  // todo: need research axions mock doesn't work with params
+  xit('should be able to load resource with complex param', () => {
+    const expectedActions = [
+      {type: ActionsTypes.LOAD.REQUEST},
+      {type: ActionsTypes.LOAD.SUCCESS, payload: {[resourceKey]: expectedResource}}
+    ];
+
+    mockAxios.onGet('/test?filter[order]=1').reply(200, {[resourceKey]: expectedResource});
+
+    return store.dispatch(apiInstance.actions.load({'filter[order]': '1'})).then(() => {
+      return expect(store.getActions()).toEqual(expectedActions);
+    });
+  })
+
   it('should be able to process load fail', () => {
     mockAxios.onGet('/test/2').reply(500, {});
 
@@ -67,6 +96,7 @@ describe('EntityApi', () => {
       return expect(isFailed && hasError && res.response.status == 500).toEqual(true);
     });
   })
+
 
   // --------------------- CREATE --------------------------
 
@@ -155,13 +185,13 @@ describe('EntityApi', () => {
   })
 
 
-  describe('should provide ability to override http method for ',()=>{
+  describe('should provide ability to override http method for ', ()=> {
 
-    beforeEach(()=>{
+    beforeEach(()=> {
       apiInstance = new EntityApi({
         entityName: 'TEST',
         endpointUrl: '/test',
-        restHttpMethods: { create: 'put', update:'post'}
+        restHttpMethods: {create: 'put', update: 'post'}
       });
     })
 
@@ -190,6 +220,45 @@ describe('EntityApi', () => {
         return expect(actions).toEqual(expectedActions);
       });
     })
+
+  });
+
+  describe('should provide ability to use axios config for', ()=> {
+    const axiosConfig = {timeout: 99};
+
+    beforeEach(()=> {
+      apiInstance = new EntityApi({
+        entityName: 'TEST',
+        endpointUrl: '/test',
+        axiosConfig
+      });
+
+      mockAxios.onAny().reply(config=>[200, config]);
+    })
+
+    it('load', () => {
+      return store.dispatch(apiInstance.actions.load(1)).then(config => {
+        return expect(config.value.timeout).toEqual(axiosConfig.timeout);
+      });
+    });
+
+    it('update', () => {
+      return store.dispatch(apiInstance.actions.update(1)).then(config => {
+        return expect(config.value.timeout).toEqual(axiosConfig.timeout);
+      });
+    });
+
+    it('remove', () => {
+      return store.dispatch(apiInstance.actions.remove(1)).then(config => {
+        return expect(config.value.timeout).toEqual(axiosConfig.timeout);
+      });
+    });
+
+    it('create', () => {
+      return store.dispatch(apiInstance.actions.create(1)).then(config => {
+        return expect(config.value.timeout).toEqual(axiosConfig.timeout);
+      });
+    });
 
   });
 

@@ -35,7 +35,9 @@ export default class EntityApi {
 
   _restHttpMethods = RestHttpMethodsDefault;
 
-  _axiosConfig = undefined;
+  _axiosConfig = {};
+
+  _idKey = 'id'
 
   /**
    * Constructor
@@ -43,11 +45,10 @@ export default class EntityApi {
    * @param {Object} options
    * @param {string} options.entityName - will be used for naming actionTypes
    * @param {string} options.endpointUrl
-   * @param {Array.<string>} [ options.requestStatuses = ['REQUEST', 'SUCCESS', 'FAIL'] ]
    * @param {class} [options.reducersBuilderCustom = reducersBuilderDefault]
+   * @param {Object} [options.axiosConfig = _axiosConfig] - options for redux-api-middleware
    * @param {string} [options.resourceKey = _resourceKey] - payload resource key (entity data key)
-   * @param {Object} [options.restHttpMethods = {'create': 'post','update': 'patch'}] - rest to HTTP methods mapping
-   * @param {Object} [options.axiosConfig] - rest to HTTP methods mapping
+   * @param {string} [options.idKey = _idKey] - payload id key (entity id key)
    */
   constructor(options) {
     if (!options || !options.entityName || !options.endpointUrl) {
@@ -58,9 +59,11 @@ export default class EntityApi {
     this._endpointUrl = options.endpointUrl;
 
     // Options with default values
-    this._reducersBuilder = options.reducersBuilderCustom || this._reducersBuilder;
+    this._reducersBuilder = options.reducersBuilderCustom || reducersBuilderDefault;
+    this._apiOptions = options.apiOptions || this._apiOptions;
     this._resourceKey = options.resourceKey || this._resourceKey;
     this._restHttpMethods = options.restHttpMethods || this._restHttpMethods;
+    this._idKey = options.idKey || this._idKey;
     this._axiosConfig = options.axiosConfig || this._axiosConfig;
   }
 
@@ -129,14 +132,6 @@ export default class EntityApi {
     return this._reducersBuilder.build(this.actionsTypes, reducerExtension, this._resourceKey, initialState);
   }
 
-
-  serialize(obj) {
-    if (!obj) {
-      return '';
-    }
-    return '/?' + Object.keys(obj).map(key => key + '=' + encodeURIComponent(obj[key])).join('&');
-  }
-
   /**
    * Load entity
    *
@@ -144,21 +139,34 @@ export default class EntityApi {
    * @returns {Object}
    */
   [RestMethods.LOAD](params) {
-    let queryString  = '';
+    let queryString = '';
     let _params = {...params};
 
-    if(parseInt(params, 10)){
-      queryString = `/${params}`;
-      _params = undefined;
+    const paramsType = typeof params;
+
+    switch (paramsType) {
+      case 'string':
+      case 'number':
+        queryString = `/${params}`;
+        _params = undefined;
+        break;
+      case 'object':
+        if (!Array.isArray(params)) {
+          queryString = `/${params[this._idKey]}`;
+          _params[this._idKey] = undefined;
+        }
+        break;
+      default:
+        break;
     }
 
-    const config = {...this._axiosConfig, params: _params };
+    const config = Object.assign({}, this._axiosConfig, {params: _params});
 
     return {
-      type: this._getActionTypeForMethod(RestMethods.LOAD, config),
-      payload: axios.get(`${this._endpointUrl}${queryString}`)
+      type: this._getActionTypeForMethod(RestMethods.LOAD),
+      payload: axios.get(`${this._endpointUrl}${queryString}`, config)
         .then(res => res.data)
-    }
+    };
   }
 
   [RestMethods.CREATE](entity) {
@@ -178,7 +186,7 @@ export default class EntityApi {
 
     return {
       type: this._getActionTypeForMethod(RestMethods.UPDATE),
-      payload: axios[updateMethodName](`${this._endpointUrl}/${id}`, data)
+      payload: axios[updateMethodName](`${this._endpointUrl}/${id}`, data, this._axiosConfig)
         .then(res => res.data)
     };
   }
@@ -192,8 +200,8 @@ export default class EntityApi {
   [RestMethods.REMOVE](id = '') {
     return {
       type: this._getActionTypeForMethod(RestMethods.REMOVE),
-      payload: axios.delete(`${this._endpointUrl}/${id}`).then(res => res.data),
-      meta: {id}
+      payload: axios.delete(`${this._endpointUrl}/${id}`, this._axiosConfig).then(res => res.data),
+      meta: {[this._idKey]: id}
     };
   }
 

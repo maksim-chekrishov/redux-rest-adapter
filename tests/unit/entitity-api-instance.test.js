@@ -6,8 +6,7 @@ describe('EntityApi', ()=> {
   beforeEach(()=> {
     apiInstance = new EntityApi({
       entityName: 'TEST',
-      endpointUrl: 'test',
-      apiOptions: {test: 'test'}
+      endpointUrl: 'test'
     });
   });
 
@@ -23,9 +22,5 @@ describe('EntityApi', ()=> {
 
   it('should should be able to configure reducer', ()=> {
     expect(typeof apiInstance.configureReducer() === 'function').toBeTruthy();
-  });
-
-  xit('should should be able to use custom option for api', ()=> {
-    expect(apiInstance.load(1).test).toBe('test');
   });
 });
