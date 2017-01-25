@@ -79,8 +79,10 @@ export default class EntityApi {
     const allMethods = {...RestMethods, ...SilentMethods};
 
     for (let key in allMethods) {
-      const methodName = allMethods[key];
-      actions[methodName] = _this[methodName].bind(_this);
+      if (allMethods.hasOwnProperty(key)) {
+        const methodName = allMethods[key];
+        actions[methodName] = _this[methodName].bind(_this);
+      }
     }
 
     return actions;
@@ -94,19 +96,23 @@ export default class EntityApi {
       this._actionsTypes = {};
 
       for (let key in RestMethods) {
-        const methodName = RestMethods[key];
-        const requestStatusActionsOptions = _this.generateRequestActionsOptions(methodName);
-        const res = {};
+        if (RestMethods.hasOwnProperty(key)) {
+          const methodName = RestMethods[key];
+          const requestStatusActionsOptions = _this.generateRequestActionsOptions(methodName);
+          const res = {};
 
-        this._requestStatuses.map((status, i)=> {
-          res[status] = requestStatusActionsOptions[i].type;
-        });
+          this._requestStatuses.map((status, i)=> {
+            res[status] = requestStatusActionsOptions[i].type;
+          });
 
-        _this._actionsTypes[key] = res;
+          _this._actionsTypes[key] = res;
+        }
       }
 
       for (let key in SilentMethods) {
-        _this.actionsTypes[key] = _this._getActionTypeForMethod(SilentMethods[key])
+        if (SilentMethods.hasOwnProperty(key)) {
+          _this.actionsTypes[key] = _this._getActionTypeForMethod(SilentMethods[key]);
+        }
       }
     }
 
@@ -114,7 +120,7 @@ export default class EntityApi {
   }
 
   _getActionTypeForMethod(apiMethodName) {
-    return `${this._entityName}_${apiMethodName.toUpperCase()}`
+    return `${this._entityName}_${apiMethodName.toUpperCase()}`;
   }
 
   generateRequestActionsOptions(methodName) {
@@ -133,34 +139,68 @@ export default class EntityApi {
   }
 
   /**
-   * Load entity
+   * Parse options for load method
    *
-   * @param {Object|Number} params
-   * @returns {Object}
+   * @param options
+   * @return {{queryString: string, params: {}}}
+   * @private
    */
-  [RestMethods.LOAD](params) {
+  _parseLoadOptions(options) {
     let queryString = '';
-    let _params = {...params};
+    let params = {};
 
-    const paramsType = typeof params;
+    const paramsType = typeof options;
 
     switch (paramsType) {
       case 'string':
       case 'number':
-        queryString = `/${params}`;
-        _params = undefined;
-        break;
-      case 'object':
-        if (!Array.isArray(params)) {
-          queryString = `/${params[this._idKey]}`;
-          _params[this._idKey] = undefined;
+        if (options + '') {
+          queryString = `/${options}`;
         }
         break;
+
+      case 'object':
+        const hasPath = options.hasOwnProperty('path');
+        const hasParams = options.hasOwnProperty('params');
+
+        if (!hasPath && !hasParams) {
+          params = options;
+          break;
+        }
+        if (hasPath) {
+          queryString = `/${options.path}`;
+        }
+
+        if (hasParams) {
+          params = options.params;
+        }
+        break;
+
       default:
         break;
     }
 
-    const config = Object.assign({}, this._axiosConfig, {params: _params});
+    return {queryString, params};
+  }
+
+
+  /**
+   * Load entity
+   *
+   * @param {Object | Number | string} options
+   * @returns {Object}
+   *
+   * @example
+   *
+   * entityName.load(1);          // get: /entity-name/1
+   * entityName.load('sub/path'); // get: /entity-name/sub/path
+   * entityName.load({mode:'short', 'page[limit]':10}}); // get: /entity-name?mode=short&page[limit]=10
+   * entityName.load({path:'11', params:{mode:'short'}}); // get: /entity-name/11?mode=short
+   */
+  [RestMethods.LOAD](options) {
+    const {queryString, params} = this._parseLoadOptions(options);
+
+    const config = Object.assign({}, this._axiosConfig, {params: params});
 
     return {
       type: this._getActionTypeForMethod(RestMethods.LOAD),
