@@ -2,7 +2,7 @@
  * Created by m.chekryshov on 18.12.16.
  */
 
-import {containsString} from './utils';
+import {containsString, hasCyclicReferences} from './utils';
 
 class ReducersBuilder {
   /**
@@ -167,13 +167,31 @@ class ReducersBuilder {
   }
 
   static _reduceFail(state, action) {
+    // console.log('cicle', action.payload.response.request)
+    let payload = action.payload;
+
+    if (hasCyclicReferences(payload)) {
+      if (payload.response) {
+        // The request was made, but the server responded with a status code
+        // that falls out of the range of 2xx
+        const {data, status, headers} = payload.response;
+        payload = {data, status, headers};
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        payload = {message: payload.message};
+      }
+    }
+
     return Object.assign({}, state, {
       _pending: false,
       _actionMeta: action.meta,
       _error: true,
-      ...action.payload
+      ...payload
     });
   }
 }
 
 export default ReducersBuilder;
+
+
+
