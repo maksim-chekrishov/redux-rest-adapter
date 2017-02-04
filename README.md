@@ -1,10 +1,13 @@
 # redux-rest-adapter
 
 redux-rest-adapter is a tool for easy connection your REST api with redux store.
+
 Compatible with [json,api specification](http://jsonapi.org/)
 
 ##Main points
 - Write **code** instead of reducers and actions for trivial data operations.
+
+##Changelog
 
 Starts from v2.0.0 redux-rest-adapter based on
 [axios](https://www.npmjs.com/package/axios) and
