@@ -1,6 +1,7 @@
 # redux-rest-adapter
 
 redux-rest-adapter is a tool for easy connection your REST api with redux store.
+Compatible with [json,api specification](http://jsonapi.org/)
 
 ##Main points
 - Write **code** instead of reducers and actions for trivial data operations.
@@ -133,6 +134,18 @@ const TagsContainer = connect(mapStateToProps, mapDispatchToProps)(TagsComponent
 
 export {TagsComponent, TagsContainer};
 ```
+
+##EntityApi constructor options
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| `entityName` | `String` |  | **Required.** will be used for naming state and actionTypes. |
+| `endpointUrl` | `String`|  | **Required.** endpointUrl |
+| `reducersBuilderCustom` | `Object`| `reducersBuilderDefault` | Customer can redefine interface of reducers-builder.js|
+| `axiosConfig` | `Object`| `{}` | [axios config](https://github.com/mzabriskie/axios#request-config)|
+| `resourceKey` | `String`| `'data'` | Name of data property key at response object |
+| `idKey` | `String`| `'id'` | Name of id property key at response data object. Required for CRUD reducer extensions|
+| `restHttpMethods` | `Object`| `{ create: 'post', update: 'patch' };` | Customer can change HTTP methods used for create and update actions |
 
 ##TODO
 

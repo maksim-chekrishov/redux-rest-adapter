@@ -45,9 +45,10 @@ export default class EntityApi {
    * @param {Object} options
    * @param {string} options.entityName - will be used for naming actionTypes
    * @param {string} options.endpointUrl
-   * @param {class} [options.reducersBuilderCustom = reducersBuilderDefault]
+   * @param {Object} [options.reducersBuilderCustom = reducersBuilderDefault]
    * @param {Object} [options.axiosConfig = _axiosConfig] - options for redux-api-middleware
    * @param {string} [options.resourceKey = _resourceKey] - payload resource key (entity data key)
+   * @param {Object} [options.restHttpMethods = RestHttpMethodsDefault] - Customer can change http methods for create and update actions
    * @param {string} [options.idKey = _idKey] - payload id key (entity id key)
    */
   constructor(options) {
@@ -60,7 +61,6 @@ export default class EntityApi {
 
     // Options with default values
     this._reducersBuilder = options.reducersBuilderCustom || reducersBuilderDefault;
-    this._apiOptions = options.apiOptions || this._apiOptions;
     this._resourceKey = options.resourceKey || this._resourceKey;
     this._restHttpMethods = options.restHttpMethods || this._restHttpMethods;
     this._idKey = options.idKey || this._idKey;
