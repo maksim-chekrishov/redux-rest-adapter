@@ -1,13 +1,13 @@
 # redux-rest-adapter
 
+[Versions 1.x.x](https://raw.githubusercontent.com/maksim-chekrishov/redux-rest-adapter/master/readme-src/readme-1v.md)
+
 redux-rest-adapter is a tool for easy connection your REST api with redux store.
 
 Compatible with [json.api specification](http://jsonapi.org/)
 
 ##Main points
 - Write **code** instead of reducers and actions for trivial data operations.
-
-[Versions 1.x.x](https://raw.githubusercontent.com/maksim-chekrishov/redux-rest-adapter/master/readme-src/readme-1v.md)
 
 ##Changelog
 
