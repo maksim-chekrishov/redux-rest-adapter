@@ -1,16 +1,6 @@
 # redux-rest-adapter
 
-redux-rest-adapter is a tool for easy connection your REST api with redux store.
-
-##Main points
-- Write **code** instead of reducers and actions for trivial data operations.
-
-Starts from v2.0.0 redux-rest-adapter based on
-[axios](https://www.npmjs.com/package/axios) and
-[promise-middleware](https://www.npmjs.com/package/promise-middleware)
-for simplification of access to promises and great experience with isomorphic app.
-
-[Versions 1.x.x](https://raw.githubusercontent.com/maksim-chekrishov/redux-rest-adapter/master/readme-src/readme-1v.md)
+redux-rest-adapter is REST adapter for redux based on [redux-api-middleware](https://www.npmjs.com/package/redux-api-middleware)
 
 [![npm version](https://badge.fury.io/js/redux-rest-adapter.svg)](https://badge.fury.io/js/redux-rest-adapter)
 
@@ -26,9 +16,10 @@ export const KnownEntitiesUrls = {
   NEWS_TAG_FOR_EDIT: 'news-tags',
   //..
 };
-export default _.mapValues(KnownEntitiesUrls, (url, name) => new EntityApi({
+export default _.mapValues(KnownEntitiesUrls, (url, name)=> new EntityApi({
   entityName: name,
-  endpointUrl: 'api/v2/' + url
+  endpointUrl: config.endpointRoot + url,
+  resourceKey: 'result' // data key at payload, default - 'data'
 }));
 ```
 
@@ -57,13 +48,15 @@ export default combineReducers({
 ###configure-store.js
 
 ```js
-import {promiseMiddleware} from 'redux-rest-adapter';
+import {apiMiddleware} from 'redux-rest-adapter/redux-api-middleware';
 //..
+
+
 export default function configureStore(initialState) {
   return createStore(
     yourIndexReducer,
     initialState,
-    applyMiddleware(promiseMiddleware())
+    applyMiddleware(apiMiddleware)
   );
 }
 ```
@@ -77,7 +70,7 @@ export default _.mapValues(knownEntitiesApi, entityApi => entityApi.actions);
 
 ##Adapter is ready
 
-![Image devTools](https://raw.githubusercontent.com/maksim-chekrishov/redux-rest-adapter/master/readme-src/dev-tools.jpg)
+![Image devTools](https://raw.githubusercontent.com/maksim-chekrishov/redux-rest-adapter/master/readme-src/dev-tools-1v.jpg)
 
 ##Usage
 
@@ -137,6 +130,12 @@ export {TagsComponent, TagsContainer};
 ##TODO
 
 Example of generated list reducer (basic CRUD operations)
+
+##Changelog
+
+- v1.1.6 - Add source code to package. Workaround for issue with [babel and redux-api-middleware@1.1.2](https://github.com/agraboso/redux-api-middleware/issues/83)
+
+
 
 ###See also
 

@@ -259,8 +259,5 @@ describe('EntityApi', () => {
         return expect(config.value.timeout).toEqual(axiosConfig.timeout);
       });
     });
-
   });
-
-
 })
