@@ -8,7 +8,7 @@ redux-rest-adapter is a tool for easy connection your REST api with redux store.
 Starts from v2.0.0 redux-rest-adapter based on
 [axios](https://www.npmjs.com/package/axios) and
 [promise-middleware](https://www.npmjs.com/package/promise-middleware)
-for simplification of access to promises and great experience with isomorphic app.
+for easy access to promises and better experience with isomorphic app.
 
 [Versions 1.x.x](https://raw.githubusercontent.com/maksim-chekrishov/redux-rest-adapter/master/readme-src/readme-1v.md)
 
