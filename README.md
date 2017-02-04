@@ -1,10 +1,10 @@
 # redux-rest-adapter
 
-[Versions 1.x.x](https://raw.githubusercontent.com/maksim-chekrishov/redux-rest-adapter/master/readme-src/readme-1v.md)
-
 redux-rest-adapter is a tool for easy connection your REST api with redux store.
 
 Compatible with [json.api specification](http://jsonapi.org/)
+
+[![npm version](https://badge.fury.io/js/redux-rest-adapter.svg)](https://badge.fury.io/js/redux-rest-adapter)
 
 ##Main points
 - Write **code** instead of reducers and actions for trivial data operations.
@@ -16,7 +16,7 @@ Starts from v2.0.0 redux-rest-adapter based on
 [promise-middleware](https://www.npmjs.com/package/promise-middleware)
 for easy access to promises and better experience with isomorphic app.
 
-[![npm version](https://badge.fury.io/js/redux-rest-adapter.svg)](https://badge.fury.io/js/redux-rest-adapter)
+[Versions 1.x.x](https://raw.githubusercontent.com/maksim-chekrishov/redux-rest-adapter/master/readme-src/readme-1v.md)
 
 ##Setup
 
