@@ -1,10 +1,10 @@
 # redux-rest-adapter
 
+[![npm version](https://badge.fury.io/js/redux-rest-adapter.svg)](https://badge.fury.io/js/redux-rest-adapter)
+
 redux-rest-adapter is a tool for easy connection your REST api with redux store.
 
 Compatible with [json.api specification](http://jsonapi.org/)
-
-[![npm version](https://badge.fury.io/js/redux-rest-adapter.svg)](https://badge.fury.io/js/redux-rest-adapter)
 
 ##Main points
 - Write **code** instead of reducers and actions for trivial data operations.
