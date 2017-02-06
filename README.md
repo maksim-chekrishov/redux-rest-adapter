@@ -36,15 +36,15 @@ export default _.mapValues(KnownEntitiesUrls, (url, name) => new EntityApi({
 }));
 ```
 
-###entities-reducer.js
+###api-reducer.js
 
 ```js
 // Ability to extend default api reducers
-const entityReducersExtensions = {
+const apiReducersExtensions = {
   NEWS_TAGS: tagsReducer
 }
 
-const entitiesReducers = _.mapValues(knownEntitiesApi, (api, key) => api.configureReducer(entityReducersExtensions[key]));
+const apiReducers = _.mapValues(knownEntitiesApi, (api, key) => api.configureReducer(apiReducersExtensions[key]));
 
 export default combineReducers(entitiesReducers);
 ```
@@ -53,7 +53,7 @@ export default combineReducers(entitiesReducers);
 
 ```js
 export default combineReducers({
-  entities: entitiesReducers
+  api: apiReducers
   //..
 });
 ```
@@ -85,7 +85,26 @@ export default _.mapValues(knownEntitiesApi, entityApi => entityApi.actions);
 
 ##Usage
 
-###tags-container.js
+###Actions
+
+```js
+import entitesActions from 'entities-actions';
+
+dispatch(entitesActions.NEWS_TAG.load());                          // GET:    api/v2/news-tags
+dispatch(entitesActions.NEWS_TAG.load(1));                         // GET:    api/v2/news-tags/1
+
+// --- NOTE: HTTP methods for create and update operations can be configured
+dispatch(entitesActions.NEWS_TAG.update(1, {name: 'new tag'}));    // PATCH:  api/v2/news-tags/1
+dispatch(entitesActions.NEWS_TAG.create({name: 'new tag'}));       // POST:   api/v2/news-tags
+dispatch(entitesActions.NEWS_TAG.remove(1));                       // DELETE: api/v2/news-tags/1
+
+// --- Silent methods for changing store without sync with backend
+dispatch(entitesActions.NEWS_TAG.set({name: 'new tag'}));          // data propety will be updated
+dispatch(entitesActions.NEWS_TAG.reset());                         // part of store will be updated to initial state
+
+```
+
+###React view example
 ```js
 class TagsComponent extends Component {
   componentWillMount() {
@@ -127,8 +146,6 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = {
   createTag: entitiesActions.NEWS_TAG_FOR_EDIT.create,
   updateTag: entitiesActions.NEWS_TAG_FOR_EDIT.update,
-  removeTag: entitiesActions.NEWS_TAG_FOR_EDIT.remove,
-  setTagForEdit: entitiesActions.NEWS_TAG_FOR_EDIT.set,
   resetEntryForEdit: entitiesActions.NEWS_TAG_FOR_EDIT.reset,
   loadList: entitiesActions.NEWS_TAGS.load
 };
@@ -138,7 +155,9 @@ const TagsContainer = connect(mapStateToProps, mapDispatchToProps)(TagsComponent
 export {TagsComponent, TagsContainer};
 ```
 
-##EntityApi constructor options
+##Configuration
+
+###EntityApi constructor options
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- | --- |
@@ -148,7 +167,7 @@ export {TagsComponent, TagsContainer};
 | `axiosConfig` | `Object`| `{}` | [axios config](https://github.com/mzabriskie/axios#request-config)|
 | `resourceKey` | `String`| `'data'` | Name of data property key at response object |
 | `idKey` | `String`| `'id'` | Name of id property key at response data object. Required for CRUD reducer extensions|
-| `restHttpMethods` | `Object`| `{ create: 'post', update: 'patch' };` | Customer can change HTTP methods used for create and update actions |
+| `restHttpMethods` | `Object`| `{create:'post', update:'patch'}` | Customer can change HTTP methods used for create and update actions |
 
 ##TODO
 
