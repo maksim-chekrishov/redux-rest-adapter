@@ -81,7 +81,7 @@ export default _.mapValues(knownEntitiesApi, entityApi => entityApi.actions);
 
 ##Adapter is ready
 
-![Image devTools](https://raw.githubusercontent.com/maksim-chekrishov/redux-rest-adapter/master/readme-src/dev-tools.jpg)
+![Image devTools](https://raw.githubusercontent.com/maksim-chekrishov/redux-rest-adapter/master/readme-src/dev-tools.png)
 
 ##Usage
 
@@ -100,11 +100,11 @@ dispatch(entitesActions.NEWS_TAG.remove(1));                       // DELETE: ap
 
 // --- Silent methods for changing store without sync with backend
 dispatch(entitesActions.NEWS_TAG.set({name: 'new tag'}));          // data propety will be updated
-dispatch(entitesActions.NEWS_TAG.reset());                         // part of store will be updated to initial state
+dispatch(entitesActions.NEWS_TAG.reset());                         // reset to initial state
 
 ```
 
-###React view example
+###React component example
 ```js
 class TagsComponent extends Component {
   componentWillMount() {
@@ -128,7 +128,7 @@ class TagsComponent extends Component {
 
   render() {
     return (
-      this.props.pending ?
+      this.props._pending ?
         <Loading/> :
         <div>
            {/*...*/}
