@@ -81,7 +81,7 @@ export default _.mapValues(knownEntitiesApi, entityApi => entityApi.actions);
 
 ##Adapter is ready
 
-![Image devTools](https://raw.githubusercontent.com/maksim-chekrishov/redux-rest-adapter/master/readme-src/dev-tools.png)
+![Image devTools](https://raw.githubusercontent.com/maksim-chekrishov/redux-rest-adapter/master/readme-src/dev-t)
 
 ##Usage
 
@@ -99,7 +99,7 @@ dispatch(entitesActions.NEWS_TAG.create({name: 'new tag'}));       // POST:   ap
 dispatch(entitesActions.NEWS_TAG.remove(1));                       // DELETE: api/v2/news-tags/1
 
 // --- Silent methods for changing store without sync with backend
-dispatch(entitesActions.NEWS_TAG.set({name: 'new tag'}));          // data propety will be updated
+dispatch(entitesActions.NEWS_TAG.set({name: 'new tag'}));          // set new data
 dispatch(entitesActions.NEWS_TAG.reset());                         // reset to initial state
 
 ```
@@ -128,7 +128,7 @@ class TagsComponent extends Component {
 
   render() {
     return (
-      this.props._pending ?
+      this.props.pending ?
         <Loading/> :
         <div>
            {/*...*/}
@@ -139,7 +139,7 @@ class TagsComponent extends Component {
 
 const mapStateToProps = (state) => ({
   list: state.entities.NEWS_TAGS.data || [],
-  pending: state.entities.NEWS_TAGS.pending,
+  pending: state.entities.NEWS_TAGS._pending,
   tagForEdit: state.entities.NEWS_TAG_FOR_EDIT.data || {}
 });
 
