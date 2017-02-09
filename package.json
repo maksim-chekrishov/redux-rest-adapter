@@ -48,6 +48,7 @@
   },
   "jest": {
     "collectCoverage": true,
+    "collectCoverageFrom": ["lib/*.js"],
     "setupFiles": [
       "tests/config/global-mocks.js"
     ]
