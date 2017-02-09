@@ -64,7 +64,7 @@ export default combineReducers({
 });
 ```
 
-###configure-store.js
+###your/configure-store.js
 
 ```js
 import indexReducer from 'your/index-reducer';
@@ -79,7 +79,7 @@ export default function configureStore(initialState) {
 }
 ```
 
-###entities-actions.js
+###your/entities-actions.js
 
 ```js
 import knownEntitiesApi from 'your/known-entities-api';
@@ -97,7 +97,7 @@ export default _.mapValues(knownEntitiesApi, entityApi => entityApi.actions);
 ###Actions
 
 ```js
-import entitesActions from 'entities-actions';
+import entitesActions from 'your/entities-actions';
 
 dispatch(entitesActions.NEWS_TAG.load());                          // GET:    api/v2/news-tags
 dispatch(entitesActions.NEWS_TAG.load(1));                         // GET:    api/v2/news-tags/1
@@ -115,6 +115,8 @@ dispatch(entitesActions.NEWS_TAG.reset());                         // reset to i
 
 ###React component example
 ```js
+import entitesActions from 'your/entities-actions';
+
 class TagsComponent extends Component {
   componentWillMount() {
     this.props.loadList();
