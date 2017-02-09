@@ -1,6 +1,8 @@
 # redux-rest-adapter
 
 [![npm version](https://badge.fury.io/js/redux-rest-adapter.svg)](https://badge.fury.io/js/redux-rest-adapter)
+[![Code Climate](https://codeclimate.com/github/maksim-chekrishov/redux-rest-adapter/badges/gpa.svg)](https://codeclimate.com/github/maksim-chekrishov/redux-rest-adapter)
+[![Test Coverage](https://codeclimate.com/github/maksim-chekrishov/redux-rest-adapter/badges/coverage.svg)](https://codeclimate.com/github/maksim-chekrishov/redux-rest-adapter/coverage)
 
 redux-rest-adapter is a tool for easy connection your REST api with redux store.
 
