@@ -22,7 +22,7 @@ for easy access to promises and better experience with isomorphic app.
 
 ##Setup
 
-###known-entities-api.js
+###your/known-entities-api.js
 
 ```js
 import EntityApi from 'redux-rest-adapter';
@@ -38,9 +38,11 @@ export default _.mapValues(KnownEntitiesUrls, (url, name) => new EntityApi({
 }));
 ```
 
-###api-reducer.js
+###your/api-reducer.js
 
 ```js
+import knownEntitiesApi from 'your/known-entities-api';
+
 // Ability to extend default api reducers
 const apiReducersExtensions = {
   NEWS_TAGS: tagsReducer
@@ -48,14 +50,16 @@ const apiReducersExtensions = {
 
 const apiReducers = _.mapValues(knownEntitiesApi, (api, key) => api.configureReducer(apiReducersExtensions[key]));
 
-export default combineReducers(entitiesReducers);
+export default combineReducers(apiReducers);
 ```
 
-###your-index-reducer.js
+###your/index-reducer.js
 
 ```js
+import apiReducer from 'your/api-reducer';
+
 export default combineReducers({
-  api: apiReducers
+  api: apiReducer
   //..
 });
 ```
@@ -63,11 +67,12 @@ export default combineReducers({
 ###configure-store.js
 
 ```js
+import indexReducer from 'your/index-reducer';
 import {promiseMiddleware} from 'redux-rest-adapter';
 //..
 export default function configureStore(initialState) {
   return createStore(
-    yourIndexReducer,
+    indexReducer,
     initialState,
     applyMiddleware(promiseMiddleware())
   );
@@ -77,6 +82,8 @@ export default function configureStore(initialState) {
 ###entities-actions.js
 
 ```js
+import knownEntitiesApi from 'your/known-entities-api';
+
 export default _.mapValues(knownEntitiesApi, entityApi => entityApi.actions);
 ```
 
@@ -140,9 +147,9 @@ class TagsComponent extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  list: state.entities.NEWS_TAGS.data || [],
-  pending: state.entities.NEWS_TAGS._pending,
-  tagForEdit: state.entities.NEWS_TAG_FOR_EDIT.data || {}
+  list: state.api.NEWS_TAGS.data || [],
+  pending: state.api.NEWS_TAGS._pending,
+  tagForEdit: state.api.NEWS_TAG_FOR_EDIT.data || {}
 });
 
 const mapDispatchToProps = {
