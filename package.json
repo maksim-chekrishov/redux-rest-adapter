@@ -1,6 +1,6 @@
 {
   "name": "redux-rest-adapter",
-  "version": "2.0.3-alpha",
+  "version": "2.0.3",
   "description": "REST adapter for redux",
   "main": "lib/index.js",
   "repository": {
@@ -22,7 +22,7 @@
     "build": "export NODE_ENV=development; yarn && $(npm bin)/babel src -d lib",
     "test": "npm run build && jest",
     "send-cover": "CODECLIMATE_REPO_TOKEN=b2b59ab7c1c4c064063ea46e2462af844a9c6b000529811379d7b2a666e23285 codeclimate-test-reporter < ./coverage/lcov.info",
-    "pub": "rm -rf node_modules && npm t && npm run send-cover && npm publish"
+    "prepub": "rm -rf node_modules && npm t && npm run send-cover"
   },
   "author": "Maksim Chekrishov <maksim.chekrishov@gmail.com> (https://github.com/maksim-chekrishov)",
   "license": "ISC",

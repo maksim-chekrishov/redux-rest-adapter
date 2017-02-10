@@ -20,6 +20,34 @@ for easy access to promises and better experience with isomorphic app.
 
 [Versions 1.x.x](https://raw.githubusercontent.com/maksim-chekrishov/redux-rest-adapter/master/readme-src/readme-1v.md)
 
+###short-example.js
+
+```js
+import EntityApi, {promiseMiddleware} from 'redux-rest-adapter';
+import {createStore, applyMiddleware, combineReducers} from 'redux';
+
+    const tagsApi = new EntityApi({
+      entityName: 'TAG',
+      endpointUrl: 'api/v2/tags'
+    });
+
+    const apiReducer = combineReducers({
+      TAG: tagsApi.configureReducer()
+    });
+
+    const store = createStore(
+      combineReducers({
+        api: apiReducer
+      }),
+      {},
+      applyMiddleware(promiseMiddleware())
+    );
+
+    store.dispatch(tagsApi.actions.load()).then(()=> {
+        console.log(store.getState().api.TAG.data); // [{id:1, name:'tag1'}, {id:2, name:'tag2'}];
+    })
+```
+
 ##Setup
 
 ###your/known-entities-api.js
