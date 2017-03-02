@@ -94,7 +94,7 @@ class ReducersBuilder {
     containsString(normalizedFlags, 'd') && reducerParts.push(this._buildReducerForOperation(actionsTypesTree.REMOVE));
 
     // Silent actions
-    containsString(normalizedFlags, 's') && reducerParts.push(this._buildSilentActionsReducer(actionsTypesTree, resourceKey));
+    containsString(normalizedFlags, 's') && reducerParts.push(this._buildSilentActionsReducer(actionsTypesTree, resourceKey, initialState));
 
     return function(state = initialState, action = {}) {
       let _state = state;
@@ -107,7 +107,7 @@ class ReducersBuilder {
     };
   }
 
-  static _buildSilentActionsReducer(actionsTypesTree, resourceKey) {
+  static _buildSilentActionsReducer(actionsTypesTree, resourceKey, initialState) {
     return (state, action) => {
       switch (action.type) {
 

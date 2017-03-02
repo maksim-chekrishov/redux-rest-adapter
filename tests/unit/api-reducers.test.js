@@ -13,6 +13,24 @@ describe('EntityApi', ()=> {
   const resourceKey = 'resourceKey';
   const idKey = 'idKey'
 
+  it('should be able to reset item', ()=> {
+    const initialState = {1: 1};
+    const reducer = entityApiInstance.configureReducer(null, initialState);
+    const stateBeforeAction = {2: 2};
+    const stateAfterAction = reducer(stateBeforeAction, entityApiInstance.reset());
+
+    expect(stateAfterAction).toEqual(initialState);
+  });
+
+  it('should be able to set item', ()=> {
+    const resourceToSet = {1: 1};
+    const reducer = entityApiInstance.configureReducer(null, resourceToSet);
+    const stateBeforeAction = {data: 1};
+    const stateAfterAction = reducer(stateBeforeAction, entityApiInstance.set(resourceToSet));
+
+    expect(stateAfterAction.data).toEqual(resourceToSet);
+  });
+
   describe('CRUD list extended reducer', ()=> {
     const {CreatedActionType, UpdatedActionType, DeletedActionType} = {
       CreatedActionType: 'CREATE_SUCCESS',
