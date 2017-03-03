@@ -1,6 +1,6 @@
 {
   "name": "redux-rest-adapter",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "REST adapter for redux",
   "main": "lib/index.js",
   "repository": {
@@ -28,6 +28,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "0.15.2",
+    "babel-plugin-transform-object-assign": "^6.22.0",
     "redux-promise-middleware": "4.2.0"
   },
   "devDependencies": {
@@ -48,7 +49,9 @@
   },
   "jest": {
     "collectCoverage": true,
-    "collectCoverageFrom": ["lib/*.js"],
+    "collectCoverageFrom": [
+      "lib/*.js"
+    ],
     "setupFiles": [
       "tests/config/global-mocks.js"
     ]
