@@ -8,10 +8,10 @@ redux-rest-adapter is a tool for easy connection your REST api with redux store.
 
 Compatible with [json.api specification](http://jsonapi.org/)
 
-##Main points
+## Main points
 - Write **code** instead of reducers and actions for trivial data operations.
 
-##Changelog
+## Changelog
 
 Starts from v2.0.0 redux-rest-adapter based on
 [axios](https://www.npmjs.com/package/axios) and
@@ -20,7 +20,7 @@ for easy access to promises and better experience with isomorphic app.
 
 [Versions 1.x.x](https://raw.githubusercontent.com/maksim-chekrishov/redux-rest-adapter/master/readme-src/readme-1v.md)
 
-###short-example.js
+### short-example.js
 
 ```js
 import EntityApi, {promiseMiddleware} from 'redux-rest-adapter';
@@ -48,9 +48,9 @@ import {createStore, applyMiddleware, combineReducers} from 'redux';
     })
 ```
 
-##Setup
+## Setup
 
-###your/known-entities-api.js
+### your/known-entities-api.js
 
 ```js
 import EntityApi from 'redux-rest-adapter';
@@ -66,7 +66,7 @@ export default _.mapValues(KnownEntitiesUrls, (url, name) => new EntityApi({
 }));
 ```
 
-###your/api-reducer.js
+### your/api-reducer.js
 
 ```js
 import knownEntitiesApi from 'your/known-entities-api';
@@ -81,7 +81,7 @@ const apiReducers = _.mapValues(knownEntitiesApi, (api, key) => api.configureRed
 export default combineReducers(apiReducers);
 ```
 
-###your/index-reducer.js
+### your/index-reducer.js
 
 ```js
 import apiReducer from 'your/api-reducer';
@@ -92,7 +92,7 @@ export default combineReducers({
 });
 ```
 
-###your/configure-store.js
+### your/configure-store.js
 
 ```js
 import indexReducer from 'your/index-reducer';
@@ -107,7 +107,7 @@ export default function configureStore(initialState) {
 }
 ```
 
-###your/entities-actions.js
+### your/entities-actions.js
 
 ```js
 import knownEntitiesApi from 'your/known-entities-api';
@@ -116,13 +116,13 @@ export default _.mapValues(knownEntitiesApi, entityApi => entityApi.actions);
 ```
 
 
-##Adapter is ready
+## Adapter is ready
 
 ![Image devTools](https://raw.githubusercontent.com/maksim-chekrishov/redux-rest-adapter/master/readme-src/dev-tools.png)
 
-##Usage
+## Usage
 
-###Actions
+### Actions
 
 ```js
 import entitesActions from 'your/entities-actions';
@@ -141,7 +141,7 @@ dispatch(entitesActions.NEWS_TAG.reset());                         // reset to i
 
 ```
 
-###React component example
+### React component example
 ```js
 import entitesActions from 'your/entities-actions';
 
@@ -194,24 +194,25 @@ const TagsContainer = connect(mapStateToProps, mapDispatchToProps)(TagsComponent
 export {TagsComponent, TagsContainer};
 ```
 
-##Configuration
+## Configuration
 
-###EntityApi constructor options
+### EntityApi constructor options
 
-| Name | Type | Default | Description |
-| --- | --- | --- | --- | --- |
-| `entityName` | `String` |  | **Required.** will be used for naming state and actionTypes. |
-| `endpointUrl` | `String`|  | **Required.** endpointUrl |
-| `reducersBuilderCustom` | `Object`| `reducersBuilderDefault` | Customer can redefine interface of reducers-builder.js|
-| `axiosConfig` | `Object`| `{}` | [axios config](https://github.com/mzabriskie/axios#request-config)|
-| `resourceKey` | `String`| `'data'` | Name of data property key at response object |
-| `idKey` | `String`| `'id'` | Name of id property key at response data object. Required for CRUD reducer extensions|
-| `restHttpMethods` | `Object`| `{create:'post', update:'patch'}` | Customer can change HTTP methods used for create and update actions |
+Name | Type | Default | Description 
+--- | --- | --- | ---
+`entityName` | `String`   | *Required.* will be used for naming state and actionTypes. 
+`endpointUrl` | `String | *Required.* endpointUrl 
+`reducersBuilderCustom` | `Object`| `reducersBuilderDefault` | Customer can redefine interface of reducers-builder.js
+`axiosConfig` | `Object`| `{}` | [axios config](https://github.com/mzabriskie/axios#request-config)
+`resourceKey` | `String`| `'data'` | Name of data property key at response object 
+`idKey` | `String`| `'id'` | Name of id property key at response data object. Required for CRUD reducer extensions
+`restHttpMethods` | `Object`| `{create:'post', update:'patch'}` | Customer can change HTTP methods used for create and  update actions 
 
-##TODO
+
+## TODO
 
 Example of generated list reducer (basic CRUD operations)
 
-###See also
+### See also
 
 [redux-localstorage-adapter](https://www.npmjs.com/package/redux-localstorage-adapter)
